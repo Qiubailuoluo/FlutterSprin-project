@@ -67,6 +67,18 @@ public class CategoryServiceImpl implements CategoryService {
         categoryMapper.deleteById(categoryId);
     }
 
+    @Override
+    public Category requireAccessible(Long userId, Long categoryId) {
+        Category category = categoryMapper.selectById(categoryId);
+        if (category == null) {
+            throw new BusinessException(ResultCode.NOT_FOUND, "分类不存在");
+        }
+        if (category.getUserId() != null && !category.getUserId().equals(userId)) {
+            throw new BusinessException(ResultCode.FORBIDDEN, "无权使用该分类");
+        }
+        return category;
+    }
+
     /** 检查用户可见范围内是否已有同名同类型分类 */
     private boolean existsByName(Long userId, String name, Integer type) {
         LambdaQueryWrapper<Category> wrapper = new LambdaQueryWrapper<>();

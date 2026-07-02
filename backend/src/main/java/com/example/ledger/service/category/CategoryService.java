@@ -1,6 +1,7 @@
 package com.example.ledger.service.category;
 
 import com.example.ledger.dto.category.CategoryCreateDTO;
+import com.example.ledger.entity.category.Category;
 import com.example.ledger.vo.category.CategoryVO;
 
 import java.util.List;
@@ -23,4 +24,9 @@ public interface CategoryService {
 
     /** 删除用户自定义分类 */
     void delete(Long userId, Long categoryId);
+
+    /**
+     * 获取用户可用的分类（系统预设或自己的），并校验存在性。
+     */
+    Category requireAccessible(Long userId, Long categoryId);
 }

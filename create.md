@@ -49,5 +49,6 @@
 - [x] `backend/` 阶段1（骨架、统一响应、全局异常、健康检查）
 - [x] `backend/` 阶段2（Security + JWT + 认证）
 - [x] `backend/` 阶段3（分类模块）
-- [ ] `backend/` 阶段4~5
+- [x] `backend/` 阶段4（账单模块）
+- [ ] `backend/` 阶段5（统计）
 - [ ] `flutter_app/` Flutter 工程
