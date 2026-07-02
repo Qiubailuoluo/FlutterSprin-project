@@ -1,0 +1,63 @@
+---
+description: Spring Boot 后端分层与编码规范
+globs: backend/**
+alwaysApply: false
+---
+
+# 后端规范（Spring Boot + MyBatis-Plus）
+
+## 包结构
+
+根包：`com.example.ledger`，按业务模块分子包，每层再分：
+
+```
+{module}/
+  controller/
+  service/
+  service/impl/
+  mapper/
+  entity/
+  dto/
+  vo/
+```
+
+模块示例：`auth/login`、`user`、`bill`、`category`、`stats`。
+
+公共代码放 `common/`（Result、异常、常量、工具）和 `config/`。
+
+## 分层职责
+
+| 层 | 允许 | 禁止 |
+|----|------|------|
+| Controller | 参数校验、调用 Service、返回 `Result<T>` | 业务逻辑、SQL、直接操作 Redis/Mapper |
+| Service | 业务逻辑、事务、调用 Mapper/Redis | 处理 HTTP、返回原始 Entity 给前端 |
+| Mapper | 数据访问（MyBatis-Plus 或 XML） | 业务判断 |
+
+## 统一响应与异常
+
+- 所有接口返回 `Result<T>`，成功 `code=200`
+- 业务异常抛自定义异常，由 `@RestControllerAdvice` 统一处理
+- 禁止在 Controller 内 try-catch 吞掉异常
+
+## 安全
+
+- 密码使用 BCrypt，禁止明文存储或日志输出
+- JWT 有效期 1 天；Token 存 Redis key：`auth:token:{userId}`
+- 鉴权：校验 JWT 且 Redis 中存在对应 Token
+
+## Redis
+
+- 统计缓存 key：`stats:user:{userId}:month:{yyyy-MM}`，TTL 5 分钟
+- 账单增删改后删除对应用户当月统计 key
+
+## SQL
+
+- 建表脚本维护在 `docs/database/schema.sql`
+- 优先 MyBatis-Plus 内置方法；复杂查询才写 XML
+
+## 注释与 API 文档
+
+- 公共类、Service 接口、Controller 必须写 JavaDoc（类说明 + 公共方法说明）
+- Controller 方法注明对应 `docs/api/*.md` 章节（`@see` 或方法注释）
+- 非显而易见的业务逻辑写行内注释；禁止无意义注释（如「// 获取用户」）
+- 新增/修改接口必须同步更新 `docs/api/` 下对应文档

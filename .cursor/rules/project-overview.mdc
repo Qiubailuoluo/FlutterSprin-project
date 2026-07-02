@@ -1,0 +1,33 @@
+---
+description: 小账本项目全局约定（技术栈、目录、文档同步）
+alwaysApply: true
+---
+
+# 小账本（Ledger）项目概览
+
+## 技术栈
+
+- 前端：Flutter（Windows + Web），包名 `com.example.ledger`
+- 后端：Spring Boot 3.x + JDK 17 + Maven 3.6.3
+- ORM：MyBatis-Plus
+- 数据库：MySQL 8.x（库名 `ledger_db`）
+- 缓存：Redis（Token + 本月统计缓存）
+- 认证：JWT（有效期 1 天）+ Redis 校验
+
+## 目录结构
+
+- `backend/` — Spring Boot 后端
+- `flutter_app/` — Flutter 前端
+- `docs/` — 架构、接口、数据库、环境说明（修改前先查阅）
+- `create.md` — 项目创建讨论记录
+
+## 通用原则
+
+1. 小而完备：MVP 优先，避免过度设计
+2. 修改接口或表结构时，同步更新 `docs/api/` 与 `docs/database/schema.sql`
+3. 统一 API 响应：`{ "code": number, "message": string, "data": T | null }`
+4. 本地学习项目，不涉及真实敏感数据；密码必须 BCrypt 存储
+
+## 后端端口
+
+- 默认 `http://localhost:8080`

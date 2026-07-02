@@ -1,0 +1,15 @@
+# Maven / IDE
+backend/target/
+backend/.mvn/wrapper/maven-wrapper.jar
+.idea/
+*.iml
+.vscode/
+
+# Flutter（后续创建时生效）
+flutter_app/.dart_tool/
+flutter_app/build/
+flutter_app/.flutter-plugins-dependencies
+
+# OS
+Thumbs.db
+.DS_Store

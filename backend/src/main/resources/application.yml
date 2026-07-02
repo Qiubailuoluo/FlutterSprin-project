@@ -1,0 +1,32 @@
+spring:
+  application:
+    name: ledger
+  datasource:
+    url: jdbc:mysql://localhost:3306/ledger_db?useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai
+    username: root
+    password: root
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      timeout: 3000ms
+
+server:
+  port: 8080
+
+mybatis-plus:
+  configuration:
+    map-underscore-to-camel-case: true
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  global-config:
+    db-config:
+      id-type: auto
+
+jwt:
+  secret: ledger-dev-secret-change-in-production-must-be-32chars-min
+  expiration-ms: 86400000
+
+logging:
+  level:
+    com.example.ledger: debug

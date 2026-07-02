@@ -1,0 +1,50 @@
+---
+description: Flutter 前端分层与编码规范（Windows/Web）
+globs: flutter_app/**
+alwaysApply: false
+---
+
+# Flutter 规范（Windows + Web）
+
+## 目录结构
+
+```
+lib/
+  app/           # 入口、路由、主题
+  core/          # 网络、存储、ApiResult、常量
+  features/      # 按业务划分
+    {feature}/
+      data/        # API 客户端、Model
+      presentation/ # 页面、Widget
+```
+
+模块：`auth`、`bill`、`category`、`stats`。
+
+## 分层职责
+
+| 层 | 职责 |
+|----|------|
+| presentation | UI、状态展示、用户交互，不拼 URL |
+| data | HTTP 请求、JSON 解析、Model 定义 |
+| core | Dio 拦截器（注入 Token）、统一 `ApiResult` 解析 |
+
+## 网络
+
+- 基址：`http://localhost:8080`（开发环境）
+- 解析后端 `{ code, message, data }`；`code != 200` 走统一错误提示
+- Token 存 `shared_preferences`，请求头 `Authorization: Bearer {token}`
+
+## 平台
+
+- 当前目标：Windows + Web
+- 不做移动端专属 API 假设；布局适配桌面宽度
+
+## 文档
+
+- 接口字段以 `docs/api/*.md` 为准，前后端不一致时先改文档再改代码
+
+## 注释
+
+- 页面/Widget 顶部说明用途；复杂交互写简短注释
+- data 层 Model 字段与 `docs/api` 保持一致并注释含义
+- 新增页面或接口对接时更新相关文档
