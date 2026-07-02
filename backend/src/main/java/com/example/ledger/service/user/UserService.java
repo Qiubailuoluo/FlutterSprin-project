@@ -1,7 +1,7 @@
-package com.example.ledger.user.service;
+package com.example.ledger.service.user;
 
-import com.example.ledger.user.entity.User;
-import com.example.ledger.user.vo.UserProfileVO;
+import com.example.ledger.entity.user.User;
+import com.example.ledger.vo.user.UserProfileVO;
 
 /**
  * 用户业务接口。

@@ -7,18 +7,19 @@
 ### 包命名
 
 - 根包：`com.example.ledger`
-- 业务模块：`auth.login`、`user`、`bill`、`category`、`stats`
+- **先分层、再模块**：如 `controller.login`、`service.user`、`mapper.bill`
+- 业务模块：`login`、`user`、`bill`、`category`、`stats`
 
-### 分层
+### 分层目录
 
 ```
-controller/   → 接参、校验、调 Service、返回 Result
-service/      → 接口定义
-service/impl/ → 业务实现
-mapper/       → 数据访问
-entity/       → 表实体
-dto/          → 入参
-vo/           → 出参
+controller/{模块}/   → 接参、校验、调 Service、返回 Result
+service/{模块}/      → 接口定义
+service/impl/{模块}/ → 业务实现
+mapper/{模块}/       → 数据访问
+entity/{模块}/       → 表实体
+dto/{模块}/          → 入参
+vo/{模块}/           → 出参
 ```
 
 ### Controller 禁止事项

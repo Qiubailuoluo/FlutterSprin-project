@@ -8,20 +8,19 @@ alwaysApply: false
 
 ## 包结构
 
-根包：`com.example.ledger`，按业务模块分子包，每层再分：
+根包：`com.example.ledger`，**先按技术分层，再按业务模块**：
 
 ```
-{module}/
-  controller/
-  service/
-  service/impl/
-  mapper/
-  entity/
-  dto/
-  vo/
+controller/   → login, user, bill, category, stats ...
+service/      → login, user, bill ...
+service/impl/ → login, user, bill ...
+mapper/       → user, bill ...
+entity/       → user, bill ...
+dto/          → login, bill ...
+vo/           → login, user, bill ...
 ```
 
-模块示例：`auth/login`、`user`、`bill`、`category`、`stats`。
+业务模块示例：`login`、`user`、`bill`、`category`、`stats`。
 
 公共代码放 `common/`（Result、异常、常量、工具）和 `config/`。
 

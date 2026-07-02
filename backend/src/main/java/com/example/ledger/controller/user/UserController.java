@@ -1,11 +1,11 @@
-package com.example.ledger.user.controller;
+package com.example.ledger.controller.user;
 
 import com.example.ledger.common.exception.BusinessException;
 import com.example.ledger.common.result.Result;
 import com.example.ledger.common.result.ResultCode;
 import com.example.ledger.common.security.SecurityUtils;
-import com.example.ledger.user.service.UserService;
-import com.example.ledger.user.vo.UserProfileVO;
+import com.example.ledger.service.user.UserService;
+import com.example.ledger.vo.user.UserProfileVO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -23,9 +23,7 @@ public class UserController {
 
     private final UserService userService;
 
-    /**
-     * 获取当前登录用户资料
-     */
+    /** 获取当前登录用户资料 */
     @GetMapping("/profile")
     public Result<UserProfileVO> profile() {
         Long userId = SecurityUtils.getUserId();

@@ -1,18 +1,18 @@
-package com.example.ledger.auth.login.service.impl;
+package com.example.ledger.service.impl.login;
 
-import com.example.ledger.auth.login.dto.LoginDTO;
-import com.example.ledger.auth.login.dto.RegisterDTO;
-import com.example.ledger.auth.login.service.AuthService;
-import com.example.ledger.auth.login.vo.LoginVO;
-import com.example.ledger.auth.login.vo.RegisterVO;
 import com.example.ledger.common.exception.BusinessException;
 import com.example.ledger.common.result.ResultCode;
 import com.example.ledger.common.util.AuthRedisService;
 import com.example.ledger.common.util.JwtUtil;
 import com.example.ledger.config.JwtProperties;
-import com.example.ledger.user.entity.User;
-import com.example.ledger.user.mapper.UserMapper;
-import com.example.ledger.user.service.UserService;
+import com.example.ledger.dto.login.LoginDTO;
+import com.example.ledger.dto.login.RegisterDTO;
+import com.example.ledger.entity.user.User;
+import com.example.ledger.mapper.user.UserMapper;
+import com.example.ledger.service.login.AuthService;
+import com.example.ledger.service.user.UserService;
+import com.example.ledger.vo.login.LoginVO;
+import com.example.ledger.vo.login.RegisterVO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;

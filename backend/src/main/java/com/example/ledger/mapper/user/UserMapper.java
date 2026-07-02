@@ -1,7 +1,7 @@
-package com.example.ledger.user.mapper;
+package com.example.ledger.mapper.user;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.example.ledger.user.entity.User;
+import com.example.ledger.entity.user.User;
 import org.apache.ibatis.annotations.Mapper;
 
 /**

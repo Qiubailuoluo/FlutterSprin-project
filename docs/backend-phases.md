@@ -33,3 +33,20 @@ D:\My_download\java_MAVEN\apache-maven-3.6.3\bin\mvn.cmd spring-boot:run
 ```
 
 **注意**：启动前需确保 MySQL 已执行 `docs/database/schema.sql`，且 Redis 已运行。
+
+## 阶段 2 验证
+
+```powershell
+# 注册
+Invoke-RestMethod -Uri "http://localhost:8080/api/auth/register" -Method Post `
+  -Body '{"username":"demo","password":"123456"}' -ContentType "application/json"
+
+# 登录
+$login = Invoke-RestMethod -Uri "http://localhost:8080/api/auth/login" -Method Post `
+  -Body '{"username":"demo","password":"123456"}' -ContentType "application/json"
+$token = $login.data.token
+
+# 获取资料
+Invoke-RestMethod -Uri "http://localhost:8080/api/user/profile" `
+  -Headers @{Authorization="Bearer $token"}
+```

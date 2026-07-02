@@ -1,4 +1,4 @@
-package com.example.ledger.user.entity;
+package com.example.ledger.entity.user;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;

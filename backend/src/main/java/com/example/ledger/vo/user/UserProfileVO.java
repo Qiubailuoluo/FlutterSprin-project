@@ -1,4 +1,4 @@
-package com.example.ledger.user.vo;
+package com.example.ledger.vo.user;
 
 import lombok.Builder;
 import lombok.Data;

@@ -1,12 +1,12 @@
-package com.example.ledger.user.service.impl;
+package com.example.ledger.service.impl.user;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.example.ledger.common.exception.BusinessException;
 import com.example.ledger.common.result.ResultCode;
-import com.example.ledger.user.entity.User;
-import com.example.ledger.user.mapper.UserMapper;
-import com.example.ledger.user.service.UserService;
-import com.example.ledger.user.vo.UserProfileVO;
+import com.example.ledger.entity.user.User;
+import com.example.ledger.mapper.user.UserMapper;
+import com.example.ledger.service.user.UserService;
+import com.example.ledger.vo.user.UserProfileVO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

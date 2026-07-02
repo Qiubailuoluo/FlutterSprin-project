@@ -1,4 +1,4 @@
-package com.example.ledger.auth.login.vo;
+package com.example.ledger.vo.login;
 
 import lombok.Builder;
 import lombok.Data;

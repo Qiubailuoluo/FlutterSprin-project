@@ -32,13 +32,13 @@ flowchart LR
 
 ## 模块划分
 
-| 模块 | 职责 |
-|------|------|
-| auth/login | 注册、登录、退出 |
-| user | 当前用户信息 |
-| category | 系统预设 + 用户自定义分类 |
-| bill | 账单 CRUD、分页筛选 |
-| stats | 本月收入/支出/结余（Redis 缓存） |
+| 模块 | 包路径示例 | 职责 |
+|------|------------|------|
+| login | `controller.login` | 注册、登录、退出 |
+| user | `controller.user` | 当前用户信息 |
+| category | `controller.category` | 系统预设 + 用户自定义分类 |
+| bill | `controller.bill` | 账单 CRUD、分页筛选 |
+| stats | `controller.stats` | 本月收入/支出/结余（Redis 缓存） |
 
 ## 认证流程
 

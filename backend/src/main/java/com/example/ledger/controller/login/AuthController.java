@@ -1,12 +1,12 @@
-package com.example.ledger.auth.login.controller;
+package com.example.ledger.controller.login;
 
-import com.example.ledger.auth.login.dto.LoginDTO;
-import com.example.ledger.auth.login.dto.RegisterDTO;
-import com.example.ledger.auth.login.service.AuthService;
-import com.example.ledger.auth.login.vo.LoginVO;
-import com.example.ledger.auth.login.vo.RegisterVO;
 import com.example.ledger.common.result.Result;
 import com.example.ledger.common.security.SecurityUtils;
+import com.example.ledger.dto.login.LoginDTO;
+import com.example.ledger.dto.login.RegisterDTO;
+import com.example.ledger.service.login.AuthService;
+import com.example.ledger.vo.login.LoginVO;
+import com.example.ledger.vo.login.RegisterVO;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -26,25 +26,19 @@ public class AuthController {
 
     private final AuthService authService;
 
-    /**
-     * 用户注册
-     */
+    /** 用户注册 */
     @PostMapping("/register")
     public Result<RegisterVO> register(@Valid @RequestBody RegisterDTO dto) {
         return Result.ok(authService.register(dto));
     }
 
-    /**
-     * 用户登录，返回 JWT Token
-     */
+    /** 用户登录，返回 JWT Token */
     @PostMapping("/login")
     public Result<LoginVO> login(@Valid @RequestBody LoginDTO dto) {
         return Result.ok(authService.login(dto));
     }
 
-    /**
-     * 退出登录，清除 Redis 中的 Token
-     */
+    /** 退出登录，清除 Redis 中的 Token */
     @PostMapping("/logout")
     public Result<Void> logout() {
         Long userId = SecurityUtils.getUserId();

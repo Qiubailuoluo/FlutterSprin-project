@@ -1,4 +1,4 @@
-package com.example.ledger.auth.login.dto;
+package com.example.ledger.dto.login;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
