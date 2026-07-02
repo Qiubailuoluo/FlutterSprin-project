@@ -48,5 +48,6 @@
 - [x] `docs/`（架构、规范、环境、API、schema.sql）
 - [x] `backend/` 阶段1（骨架、统一响应、全局异常、健康检查）
 - [x] `backend/` 阶段2（Security + JWT + 认证）
-- [ ] `backend/` 阶段3~5
+- [x] `backend/` 阶段3（分类模块）
+- [ ] `backend/` 阶段4~5
 - [ ] `flutter_app/` Flutter 工程

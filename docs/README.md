@@ -10,5 +10,6 @@
 | [api/category.md](api/category.md) | 分类 |
 | [api/bill.md](api/bill.md) | 账单 |
 | [api/stats.md](api/stats.md) | 月度统计 |
+| [test-accounts.md](test-accounts.md) | 本地测试账号 |
 
 项目根目录 [create.md](../create.md) 记录需求与讨论过程。
