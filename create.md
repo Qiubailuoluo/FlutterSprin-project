@@ -50,5 +50,6 @@
 - [x] `backend/` 阶段2（Security + JWT + 认证）
 - [x] `backend/` 阶段3（分类模块）
 - [x] `backend/` 阶段4（账单模块）
-- [ ] `backend/` 阶段5（统计）
+- [x] `backend/` 阶段5（月度统计）
+- [ ] `flutter_app/` Flutter 工程
 - [ ] `flutter_app/` Flutter 工程

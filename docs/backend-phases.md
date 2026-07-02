@@ -8,7 +8,7 @@
 | 2 | Spring Security + JWT + 注册/登录/退出/用户信息 | 已完成 |
 | 3 | 分类模块（预设 + 自定义） | 已完成 |
 | 4 | 账单 CRUD + 分页筛选 | 已完成 |
-| 5 | 月度统计 + Redis 缓存 | 待开始 |
+| 5 | 月度统计 + Redis 缓存 | 已完成 |
 
 ## 阶段 1 验证
 
@@ -85,4 +85,14 @@ Invoke-RestMethod -Uri "http://localhost:8080/api/bills" -Method Post -Headers $
 
 # 分页查询
 Invoke-RestMethod -Uri "http://localhost:8080/api/bills?type=2" -Headers $h
+```
+
+## 阶段 5 验证
+
+```powershell
+# 本月汇总
+Invoke-RestMethod -Uri "http://localhost:8080/api/stats/month?year=2026&month=7" -Headers $h
+
+# 验证 Redis 缓存（userId 替换为实际值）
+# redis-cli GET stats:user:2:month:2026-07
 ```

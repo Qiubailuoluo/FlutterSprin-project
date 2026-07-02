@@ -59,3 +59,11 @@ Invoke-RestMethod -Uri "http://localhost:8080/api/bills" -Method Post `
 Invoke-RestMethod -Uri "http://localhost:8080/api/bills?page=1&size=20&type=2" `
   -Headers @{Authorization="Bearer $token"}
 ```
+
+## 统计接口测试示例
+
+```powershell
+# 本月汇总
+Invoke-RestMethod -Uri "http://localhost:8080/api/stats/month?year=2026&month=7" `
+  -Headers @{Authorization="Bearer $token"}
+```
