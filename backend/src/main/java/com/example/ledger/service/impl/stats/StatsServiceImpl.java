@@ -19,6 +19,12 @@ import java.util.Map;
 
 /**
  * 统计业务实现：MySQL 聚合 + Redis 缓存（5 分钟）。
+ * <p>
+ * 对 bill 表按月份、类型 SUM(amount)，结果缓存到 Redis。
+ * 收入 type=1，支出 type=2，结余 = 收入 - 支出。
+ * </p>
+ *
+ * @see docs/learn/07-stats-cache.md
  */
 @Service
 @RequiredArgsConstructor

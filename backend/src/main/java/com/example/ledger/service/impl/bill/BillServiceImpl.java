@@ -31,7 +31,18 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
- * 账单业务实现。
+ * 账单业务实现（标准 CRUD + 分页 + 关联查询示例）。
+ * <p>
+ * 学习要点：
+ * </p>
+ * <ul>
+ *   <li>Create：校验分类 → insert → 清除统计缓存</li>
+ *   <li>Read：MyBatis-Plus 分页 + 批量查分类名</li>
+ *   <li>Update：校验归属权 → 部分字段更新 → 缓存失效</li>
+ *   <li>Delete：校验归属权 → delete → 缓存失效</li>
+ * </ul>
+ *
+ * @see docs/learn/06-mybatis-crud.md
  */
 @Service
 @RequiredArgsConstructor

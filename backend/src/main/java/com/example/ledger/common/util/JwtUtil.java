@@ -11,7 +11,18 @@ import java.nio.charset.StandardCharsets;
 import java.util.Date;
 
 /**
- * JWT 签发与解析工具。
+ * JWT（JSON Web Token）签发与解析工具。
+ * <p>
+ * JWT 由三部分组成：Header.Payload.Signature，登录成功后返回给前端，
+ * 前端后续请求在 Header 中携带：{@code Authorization: Bearer {token}}。
+ * </p>
+ * <ul>
+ *   <li>subject：存 userId</li>
+ *   <li>claim username：存用户名，减少查库</li>
+ *   <li>expiration：过期时间，本项目为 1 天</li>
+ * </ul>
+ *
+ * @see docs/learn/04-login-jwt.md
  */
 @Component
 public class JwtUtil {
@@ -21,11 +32,12 @@ public class JwtUtil {
 
     public JwtUtil(JwtProperties jwtProperties) {
         this.jwtProperties = jwtProperties;
+        // 使用配置的 secret 生成 HMAC 签名密钥
         this.secretKey = Keys.hmacShaKeyFor(jwtProperties.getSecret().getBytes(StandardCharsets.UTF_8));
     }
 
     /**
-     * 为用户签发 Token，claims 中包含 userId、username。
+     * 签发 Token。Payload 中的 sub=userId，自定义 claim 存 username。
      */
     public String generateToken(Long userId, String username) {
         Date now = new Date();
@@ -39,7 +51,7 @@ public class JwtUtil {
                 .compact();
     }
 
-    /** 解析 Token，失败时抛出 JwtException */
+    /** 解析并验签 Token，过期或篡改会抛异常 */
     public Claims parseToken(String token) {
         return Jwts.parser()
                 .verifyWith(secretKey)

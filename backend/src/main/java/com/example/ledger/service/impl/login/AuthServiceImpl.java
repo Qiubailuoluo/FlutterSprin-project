@@ -20,7 +20,14 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 /**
- * 认证业务实现：BCrypt 密码、JWT 签发、Redis Token 存储。
+ * 认证业务实现：注册、登录、退出。
+ * <p>
+ * 登录流程：校验密码 → 签发 JWT → 写入 Redis（支持退出失效）。
+ * 密码绝不存明文，使用 BCrypt 单向哈希。
+ * </p>
+ *
+ * @see docs/learn/04-login-jwt.md
+ * @see docs/learn/05-redis.md
  */
 @Service
 @RequiredArgsConstructor
@@ -33,6 +40,10 @@ public class AuthServiceImpl implements AuthService {
     private final JwtProperties jwtProperties;
     private final AuthRedisService authRedisService;
 
+    /**
+     * 注册：查重 → BCrypt 加密密码 → 插入 user 表。
+     * {@code @Transactional} 保证插入失败时回滚。
+     */
     @Override
     @Transactional(rollbackFor = Exception.class)
     public RegisterVO register(RegisterDTO dto) {
@@ -41,6 +52,7 @@ public class AuthServiceImpl implements AuthService {
         }
         User user = new User();
         user.setUsername(dto.getUsername());
+        // BCrypt 每次加密结果不同，但 matches() 可验证同一明文
         user.setPassword(passwordEncoder.encode(dto.getPassword()));
         user.setNickname(StringUtils.hasText(dto.getNickname()) ? dto.getNickname() : dto.getUsername());
         user.setStatus(1);
@@ -52,10 +64,15 @@ public class AuthServiceImpl implements AuthService {
                 .build();
     }
 
+    /**
+     * 登录：校验账号密码 → 生成 JWT → 存入 Redis。
+     * Redis 中 Token 用于：退出时删除、请求时二次校验（防止 Token 被伪造后长期使用）。
+     */
     @Override
     public LoginVO login(LoginDTO dto) {
         User user = userService.findByUsername(dto.getUsername());
         if (user == null || !passwordEncoder.matches(dto.getPassword(), user.getPassword())) {
+            // 不明确提示「用户不存在」或「密码错误」，防止撞库
             throw new BusinessException(ResultCode.UNAUTHORIZED, "用户名或密码错误");
         }
         if (user.getStatus() != null && user.getStatus() == 0) {
@@ -72,6 +89,7 @@ public class AuthServiceImpl implements AuthService {
                 .build();
     }
 
+    /** 退出：仅删除 Redis 中的 Token，JWT 本身仍会过期但无法再访问接口 */
     @Override
     public void logout(Long userId) {
         authRedisService.removeToken(userId);

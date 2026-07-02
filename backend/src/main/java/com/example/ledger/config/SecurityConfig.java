@@ -20,6 +20,17 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 /**
  * Spring Security 配置：无状态 JWT 鉴权。
+ * <p>
+ * 关键配置说明：
+ * </p>
+ * <ul>
+ *   <li>禁用 CSRF：前后端分离 + Token 鉴权，不需要表单 CSRF</li>
+ *   <li>STATELESS：不使用 Session，每次请求靠 JWT</li>
+ *   <li>PUBLIC_PATHS：注册、登录、健康检查无需 Token</li>
+ *   <li>其余路径必须 authenticated（过滤器已设置登录态）</li>
+ * </ul>
+ *
+ * @see docs/learn/04-login-jwt.md
  */
 @Configuration
 @EnableWebSecurity

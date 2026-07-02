@@ -15,6 +15,12 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * 月度统计 Redis 缓存：读取、写入、失效。
+ * <p>
+ * Cache-Aside 模式：读时先查 Redis，miss 则查 MySQL 并回填；
+ * 账单增删改时由 {@link com.example.ledger.service.impl.bill.BillServiceImpl} 调用 {@link #invalidateMonth} 删除缓存。
+ * </p>
+ *
+ * @see docs/learn/07-stats-cache.md
  */
 @Slf4j
 @Component

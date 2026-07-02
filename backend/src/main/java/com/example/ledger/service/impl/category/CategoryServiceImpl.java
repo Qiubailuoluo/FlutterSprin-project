@@ -15,7 +15,13 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 /**
- * 分类业务实现。
+ * 分类业务实现（入门级 CRUD 示例）。
+ * <p>
+ * 列表查询使用 {@code LambdaQueryWrapper} 组合条件：
+ * {@code user_id IS NULL OR user_id = ?} 表示「系统预设 + 当前用户自定义」。
+ * </p>
+ *
+ * @see docs/learn/06-mybatis-crud.md
  */
 @Service
 @RequiredArgsConstructor

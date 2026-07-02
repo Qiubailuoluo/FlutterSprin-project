@@ -84,3 +84,5 @@ public Result<Long> create(@Valid @RequestBody BillCreateDTO dto) {
 ### 文档同步
 
 新增或变更接口时，**代码与 `docs/api/` 同一次提交**。
+
+学习向说明写入 `docs/learn/`，帮助理解分层、登录、Redis、CRUD 等机制。
