@@ -2,6 +2,7 @@ import 'package:go_router/go_router.dart';
 import 'package:ledger/features/auth/application/auth_session.dart';
 import 'package:ledger/features/auth/presentation/login_page.dart';
 import 'package:ledger/features/auth/presentation/register_page.dart';
+import 'package:ledger/features/bill/presentation/bill_list_page.dart';
 import 'package:ledger/features/category/presentation/category_page.dart';
 import 'package:ledger/features/home/presentation/home_page.dart';
 import 'package:ledger/features/shell/presentation/app_shell.dart';
@@ -14,6 +15,7 @@ class AppRoutes {
   static const register = '/register';
   static const home = '/home';
   static const categories = '/categories';
+  static const bills = '/bills';
 }
 
 /// 应用路由，含登录守卫（refreshListenable + redirect）。
@@ -54,6 +56,10 @@ class AppRouter {
             GoRoute(
               path: AppRoutes.categories,
               builder: (context, state) => const CategoryPage(),
+            ),
+            GoRoute(
+              path: AppRoutes.bills,
+              builder: (context, state) => const BillListPage(),
             ),
           ],
         ),

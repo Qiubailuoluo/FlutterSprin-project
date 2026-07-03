@@ -9,8 +9,18 @@
 | 1 | 工程骨架、Material3 主题、路由、Dio/ApiResult、Shell 布局、健康检查 | 已完成 |
 | 2 | 登录/注册页 + Token 存储 + 路由守卫 | 已完成 |
 | 3 | 首页统计卡片 + 分类列表 | 已完成 |
-| 4 | 账单列表/表单 CRUD | 待开始 |
+| 4 | 账单列表/表单 CRUD | 已完成 |
 | 5 | 完善交互、错误提示、UI 组件库（可选 TDesign） | 待开始 |
+
+## 阶段 4 验证
+
+1. 侧边栏「账单」→ 进入账单列表
+2. 「新增账单」填写分类、金额、日期 → 保存后列表刷新
+3. 编辑、删除账单；切换「全部/收入/支出」筛选
+4. 分页上一页/下一页正常
+5. `flutter analyze` + `flutter test`
+
+详见 [learn/11-flutter-bill-crud.md](learn/11-flutter-bill-crud.md)
 
 ## 阶段 3 验证
 
@@ -59,6 +69,7 @@ flutter_app/lib/
     ├── auth/         # 登录
     ├── home/         # 首页
     ├── category/     # 分类
+    ├── bill/         # 账单
     ├── stats/        # 统计 API
     └── shell/        # 侧边栏布局
 ```

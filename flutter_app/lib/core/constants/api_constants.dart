@@ -19,4 +19,7 @@ class ApiConstants {
 
   /// 分类接口，见 docs/api/category.md
   static const String categoriesPath = '/api/categories';
+
+  /// 账单接口，见 docs/api/bill.md
+  static const String billsPath = '/api/bills';
 }

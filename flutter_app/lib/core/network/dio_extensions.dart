@@ -47,6 +47,20 @@ extension DioClientRequest on Dio {
     }
   }
 
+  /// 执行 PUT 并解析为 ApiResult。
+  Future<ApiResult<T>> putApiResult<T>(
+    String path, {
+    Object? data,
+    required T? Function(dynamic json) fromJsonT,
+  }) async {
+    try {
+      final response = await put<Map<String, dynamic>>(path, data: data);
+      return ApiResult.fromJson(response.data ?? {}, fromJsonT);
+    } on DioException catch (e) {
+      return _fromDioError(e, fromJsonT);
+    }
+  }
+
   ApiResult<T> _fromDioError<T>(
     DioException e,
     T? Function(dynamic json) fromJsonT,

@@ -64,4 +64,13 @@ class DioClient {
   }) {
     return _dio.deleteApiResult(path, fromJsonT: fromJsonT);
   }
+
+  /// PUT 请求并解析为 [ApiResult]。
+  Future<ApiResult<T>> put<T>(
+    String path, {
+    Object? data,
+    required T? Function(dynamic json) fromJsonT,
+  }) {
+    return _dio.putApiResult(path, data: data, fromJsonT: fromJsonT);
+  }
 }

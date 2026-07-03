@@ -55,4 +55,5 @@
 - [x] `flutter_app/` 阶段1（Web 骨架、主题、路由、健康检查）
 - [x] `flutter_app/` 阶段2（登录/注册、Token、路由守卫）
 - [x] `flutter_app/` 阶段3（首页统计卡片 + 分类列表）
-- [ ] `flutter_app/` 阶段4~5
+- [x] `flutter_app/` 阶段4（账单列表/表单 CRUD）
+- [ ] `flutter_app/` 阶段5

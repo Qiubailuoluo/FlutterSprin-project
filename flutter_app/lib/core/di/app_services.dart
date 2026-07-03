@@ -2,6 +2,7 @@ import 'package:ledger/core/network/dio_client.dart';
 import 'package:ledger/core/storage/token_storage.dart';
 import 'package:ledger/features/auth/application/auth_session.dart';
 import 'package:ledger/features/auth/data/auth_api.dart';
+import 'package:ledger/features/bill/data/bill_api.dart';
 import 'package:ledger/features/category/data/category_api.dart';
 import 'package:ledger/features/stats/data/stats_api.dart';
 import 'package:go_router/go_router.dart';
@@ -18,6 +19,7 @@ class AppServices {
   late final AuthApi authApi = AuthApi(client: dioClient);
   late final StatsApi statsApi = StatsApi(client: dioClient);
   late final CategoryApi categoryApi = CategoryApi(client: dioClient);
+  late final BillApi billApi = BillApi(client: dioClient);
   late final AuthSession authSession = AuthSession(
     tokenStorage: tokenStorage,
     authApi: authApi,

@@ -13,6 +13,11 @@ class AppShell extends StatelessWidget {
   static const _menuItems = [
     _MenuItem(icon: Icons.home_outlined, label: '首页', route: AppRoutes.home),
     _MenuItem(
+      icon: Icons.receipt_long_outlined,
+      label: '账单',
+      route: AppRoutes.bills,
+    ),
+    _MenuItem(
       icon: Icons.category_outlined,
       label: '分类',
       route: AppRoutes.categories,
@@ -82,6 +87,7 @@ class AppShell extends StatelessWidget {
 
   String _titleForLocation(String location) {
     if (location.startsWith(AppRoutes.home)) return '首页';
+    if (location.startsWith(AppRoutes.bills)) return '账单管理';
     if (location.startsWith(AppRoutes.categories)) return '分类管理';
     return '小账本';
   }
