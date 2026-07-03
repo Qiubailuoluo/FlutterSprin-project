@@ -24,9 +24,24 @@ alwaysApply: true
 ## 通用原则
 
 1. 小而完备：MVP 优先，避免过度设计
-2. 修改接口或表结构时，同步更新 `docs/api/` 与 `docs/database/schema.sql`
+2. **代码变更后必须同步 docs**（见下方清单，与代码同一次提交）
 3. 统一 API 响应：`{ "code": number, "message": string, "data": T | null }`
 4. 本地学习项目，不涉及真实敏感数据；密码必须 BCrypt 存储
+
+## 文档同步清单（改代码必查）
+
+| 变更类型 | 必须更新 |
+|----------|----------|
+| 新增/修改/删除接口 | `docs/api/*.md` |
+| 表结构变更 | `docs/database/schema.sql` |
+| 架构、模块、流程变更 | `docs/architecture.md` |
+| 环境、依赖、运行方式 | `docs/dev-setup.md` |
+| 编码规范、目录约定 | `docs/conventions.md` |
+| 机制讲解（登录、Redis、CRUD 等） | `docs/learn/*.md` |
+| 测试账号、示例命令 | `docs/test-accounts.md` |
+| 阶段进度 | `docs/backend-phases.md`、`create.md` |
+
+**禁止**：只改代码不更新文档；文档与实现不一致时，以代码为准并立即补文档。
 
 ## 后端端口
 

@@ -104,15 +104,62 @@ jwt:
   expiration: 86400000  # 1 天，毫秒
 ```
 
-## Flutter（待创建）
+## Flutter 环境检查（2026-07-03）
 
-工程目录：`flutter_app/`
+### 已就绪
+
+| 项 | 状态 | 说明 |
+|----|------|------|
+| Flutter SDK | ✅ 3.38.5 stable | `D:\My_download\FlutterSDK\flutter_windows_3.38.5-stable\flutter` |
+| Dart | ✅ 3.10.4 | 随 Flutter 自带 |
+| Windows 系统 | ✅ | Win10 22H2 |
+| Web（Edge） | ✅ | 设备 `edge` 可用，**无需 Chrome** |
+| Windows 设备识别 | ✅ | 设备 `windows` 已识别 |
+| 国内镜像 | ✅ | pub / storage 使用 flutter-io.cn |
+
+验证命令：
+
+```powershell
+flutter --version
+flutter doctor -v
+flutter devices
+```
+
+当前可用设备：
+
+```text
+Windows (desktop) • windows • windows-x64
+Edge (web)        • edge    • web-javascript
+```
+
+### 待解决（开始开发前确认）
+
+| 项 | 状态 | 影响 | 建议 |
+|----|------|------|------|
+| **Visual Studio（C++）** | ❌ 未安装 | **Windows 桌面无法编译运行** | 安装 [Visual Studio 2022](https://visualstudio.microsoft.com/downloads/)，勾选 **「使用 C++ 的桌面开发」** |
+| Chrome | ❌ 未安装 | 无影响 | 使用 Edge：`flutter run -d edge` |
+| Android SDK | ❌ 未安装 | 无影响 | 本项目暂不做 Android，可忽略 |
+
+### 能否开始 Flutter？
+
+| 目标平台 | 现在能否开始 | 说明 |
+|----------|--------------|------|
+| **Web（Edge）** | ✅ **可以** | 推荐先 Web 开发调试，环境已满足 |
+| **Windows 桌面** | ⚠️ **需先装 VS** | 创建工程可以，但 `flutter run -d windows` / `flutter build windows` 需要 Visual Studio C++ 工具链 |
+
+### 推荐启动顺序
+
+1. **阶段 1**：用 Web（Edge）创建 `flutter_app/` 并对接后端 API
+2. **并行可选**：安装 Visual Studio C++  workload，再测 Windows 桌面
+3. 开发前确保后端已启动：`http://localhost:8080`
+
+### 运行命令（工程创建后）
 
 ```powershell
 cd flutter_app
 flutter pub get
-flutter run -d windows
-flutter run -d chrome
+flutter run -d edge      # Web（当前推荐）
+flutter run -d windows   # 需安装 Visual Studio C++ 后
 ```
 
 API 基址（开发）：`http://localhost:8080`

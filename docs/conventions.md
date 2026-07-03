@@ -53,13 +53,18 @@ public Result<Long> create(@Valid @RequestBody BillCreateDTO dto) {
 
 ## 文档同步
 
-以下变更必须同步更新文档：
+**规则：修改代码完成后，必须检查并更新 docs，与代码同一次提交。**
 
 | 变更类型 | 更新文件 |
 |----------|----------|
-| 新增/修改接口 | `docs/api/*.md` |
+| 新增/修改/删除接口 | `docs/api/*.md` |
 | 表结构变更 | `docs/database/schema.sql` |
-| 环境依赖变更 | `docs/dev-setup.md` |
+| 架构、模块划分 | `docs/architecture.md` |
+| 环境、Flutter/后端运行 | `docs/dev-setup.md` |
+| 编码规范 | `docs/conventions.md` |
+| 学习讲解、流程说明 | `docs/learn/*.md` |
+| 测试账号与示例 | `docs/test-accounts.md` |
+| 开发阶段进度 | `docs/backend-phases.md`、`create.md` |
 
 ## Git 提交建议
 
@@ -72,17 +77,24 @@ public Result<Long> create(@Valid @RequestBody BillCreateDTO dto) {
 
 ### 后端
 
-- 类、接口、Controller 公共方法：JavaDoc
-- Controller 标注 `@see docs/api/xxx.md`
-- 业务规则、Redis key 策略等非直观逻辑：简短行内注释
+| 位置 | 要求 |
+|------|------|
+| 类 | JavaDoc + `@see docs/...` |
+| public 方法 | JavaDoc：用途、参数、异常 |
+| 非直观业务行 | 行内 `//`：为什么这样写 |
+| Controller | 每个接口方法链接 `docs/api/xxx.md` |
 
-### 前端
+### 前端（Flutter）
 
-- Feature 入口页面、API 客户端类：顶部说明
-- Model 字段注释与接口文档一致
+| 位置 | 要求 |
+|------|------|
+| 页面/API 类 | 文件顶部或类注释说明职责 |
+| public 方法 | `///` 文档注释 |
+| 复杂 Widget/状态逻辑 | 行内简短注释 |
+| Model 字段 | `///` 与 `docs/api` 字段一致 |
 
-### 文档同步
+### 原则
 
-新增或变更接口时，**代码与 `docs/api/` 同一次提交**。
-
-学习向说明写入 `docs/learn/`，帮助理解分层、登录、Redis、CRUD 等机制。
+- 注释解释「为什么」，避免复述代码
+- 禁止无意义注释
+- **改代码 → 改 docs → 一起提交**

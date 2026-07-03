@@ -52,5 +52,7 @@
 - [x] `backend/` 阶段4（账单模块）
 - [x] `backend/` 阶段5（月度统计）
 - [x] 代码注释增强 + `docs/learn/` 学习文档
-- [ ] `flutter_app/` Flutter 工程（待你说「开始 Flutter」）
-- [ ] `flutter_app/` Flutter 工程
+- [x] `flutter_app/` 阶段1（Web 骨架、主题、路由、健康检查）
+- [x] `flutter_app/` 阶段2（登录/注册、Token、路由守卫）
+- [x] `flutter_app/` 阶段3（首页统计卡片 + 分类列表）
+- [ ] `flutter_app/` 阶段4~5

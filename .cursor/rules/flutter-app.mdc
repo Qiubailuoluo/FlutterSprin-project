@@ -36,15 +36,22 @@ lib/
 
 ## 平台
 
-- 当前目标：Windows + Web
-- 不做移动端专属 API 假设；布局适配桌面宽度
+- 当前目标：**Web（Edge）**；Windows 桌面暂缓（需 Visual Studio C++）
+- 布局适配桌面宽度（NavigationRail + 宽内容区）
 
-## 文档
+## 文档同步（改代码必做）
 
-- 接口字段以 `docs/api/*.md` 为准，前后端不一致时先改文档再改代码
+与 backend 相同原则，**代码与 docs 同一次提交**：
+
+| 变更 | 更新 |
+|------|------|
+| 对接接口、字段 | `docs/api/` |
+| 页面流程、路由 | `docs/learn/` 或 `docs/conventions.md` |
+| 依赖、运行命令 | `docs/dev-setup.md` |
 
 ## 注释
 
-- 页面/Widget 顶部说明用途；复杂交互写简短注释
-- data 层 Model 字段与 `docs/api` 保持一致并注释含义
-- 新增页面或接口对接时更新相关文档
+- **类/文件顶部**：说明模块用途
+- **public 方法/Widget build**：`///` 文档注释或简短说明
+- **复杂逻辑行**：行内 `//`（状态流转、边界条件）
+- Model 字段：`///` 注释含义，与 `docs/api` 一致

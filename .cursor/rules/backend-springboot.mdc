@@ -56,8 +56,23 @@ vo/           → login, user, bill ...
 
 ## 注释与 API 文档
 
-- 公共类、Service 接口、Controller 必须写 JavaDoc（类说明 + 公共方法说明）
-- Controller 方法注明对应 `docs/api/*.md` 章节（`@see` 或方法注释）
-- 非显而易见的业务逻辑写行内注释；禁止无意义注释（如「// 获取用户」）
-- 新增/修改接口必须同步更新 `docs/api/` 下对应文档
-- 重要机制（登录、缓存、异常等）需在 `docs/learn/` 补充或更新学习说明
+### 必须写注释的位置
+
+- **类**：JavaDoc，说明职责与关联文档 `@see docs/...`
+- **public 方法**：JavaDoc（用途、参数含义、可能抛出的 BusinessException）
+- **非直观代码行**：行内 `//` 注释（业务规则、Redis key、为何这样写）
+
+### 注释原则
+
+- 写「为什么」，少写「做了什么」（代码本身应可读）
+- Controller 方法注明 `@see docs/api/xxx.md`
+- 禁止无意义注释（如 `// 获取用户` 紧跟 `getUser()`）
+
+### 文档同步（与代码同次提交）
+
+| 变更 | 更新 |
+|------|------|
+| 接口 | `docs/api/` |
+| 表结构 | `docs/database/schema.sql` |
+| 机制/流程 | `docs/learn/` |
+| 环境/命令 | `docs/dev-setup.md` |
