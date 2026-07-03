@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:ledger/app/router/app_router.dart';
 import 'package:ledger/core/di/app_services.dart';
+import 'package:ledger/core/widgets/inline_error_banner.dart';
 import 'package:ledger/features/auth/application/auth_session.dart';
 
 /// 注册页：注册成功后自动登录并跳转首页。
@@ -113,12 +114,7 @@ class _RegisterPageState extends State<RegisterPage> {
                       ),
                       if (_error != null) ...[
                         const SizedBox(height: 12),
-                        Text(
-                          _error!,
-                          style: TextStyle(
-                            color: Theme.of(context).colorScheme.error,
-                          ),
-                        ),
+                        InlineErrorBanner(message: _error!),
                       ],
                       const SizedBox(height: 24),
                       FilledButton(

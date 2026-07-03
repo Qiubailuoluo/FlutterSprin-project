@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:ledger/core/di/app_services.dart';
+import 'package:ledger/core/feedback/app_messenger.dart';
+import 'package:ledger/core/widgets/async_state_view.dart';
+import 'package:ledger/core/widgets/confirm_dialog.dart';
+import 'package:ledger/core/widgets/page_header.dart';
 import 'package:ledger/features/category/data/category_api.dart';
 import 'package:ledger/features/category/data/models/category_item.dart';
 
@@ -109,7 +113,7 @@ class _CategoryPageState extends State<CategoryPage> {
 
     final name = nameController.text.trim();
     if (name.isEmpty) {
-      _showSnack('请输入分类名称');
+      AppMessenger.showError('请输入分类名称');
       return;
     }
 
@@ -117,49 +121,37 @@ class _CategoryPageState extends State<CategoryPage> {
     if (!mounted) return;
 
     if (result.isSuccess) {
-      _showSnack('已添加分类「$name」');
+      AppMessenger.showSuccess('已添加分类「$name」');
       await _loadCategories();
     } else {
-      _showSnack(result.message.isNotEmpty ? result.message : '添加失败');
+      AppMessenger.showError(
+        result.message.isNotEmpty ? result.message : '添加失败',
+      );
     }
   }
 
   Future<void> _confirmDelete(CategoryItem item) async {
-    final confirmed = await showDialog<bool>(
+    final confirmed = await showConfirmDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('删除分类'),
-        content: Text('确定删除自定义分类「${item.name}」吗？'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: const Text('取消'),
-          ),
-          FilledButton(
-            onPressed: () => Navigator.pop(context, true),
-            child: const Text('删除'),
-          ),
-        ],
-      ),
+      title: '删除分类',
+      message: '确定删除自定义分类「${item.name}」吗？',
+      confirmText: '删除',
+      destructive: true,
     );
 
-    if (confirmed != true || !mounted) return;
+    if (!confirmed || !mounted) return;
 
     final result = await _categoryApi.delete(item.id);
     if (!mounted) return;
 
     if (result.isSuccess) {
-      _showSnack('已删除「${item.name}」');
+      AppMessenger.showSuccess('已删除「${item.name}」');
       await _loadCategories();
     } else {
-      _showSnack(result.message.isNotEmpty ? result.message : '删除失败');
+      AppMessenger.showError(
+        result.message.isNotEmpty ? result.message : '删除失败',
+      );
     }
-  }
-
-  void _showSnack(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(message)),
-    );
   }
 
   @override
@@ -169,10 +161,9 @@ class _CategoryPageState extends State<CategoryPage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            children: [
-              Text('分类管理', style: Theme.of(context).textTheme.headlineSmall),
-              const Spacer(),
+          PageHeader(
+            title: '分类管理',
+            actions: [
               FilledButton.icon(
                 onPressed: _showCreateDialog,
                 icon: const Icon(Icons.add, size: 18),
@@ -194,72 +185,57 @@ class _CategoryPageState extends State<CategoryPage> {
           Expanded(
             child: Card(
               clipBehavior: Clip.antiAlias,
-              child: _buildBody(context),
+              child: AsyncStateView(
+                loading: _loading && _items.isEmpty,
+                error: _error,
+                onRetry: _loadCategories,
+                isEmpty: !_loading && _error == null && _items.isEmpty,
+                emptyMessage: '暂无分类',
+                child: ListView.separated(
+                  itemCount: _items.length,
+                  separatorBuilder: (context, index) =>
+                      Divider(height: 1, color: Colors.grey.shade200),
+                  itemBuilder: (context, index) {
+                    final item = _items[index];
+                    return ListTile(
+                      leading: CircleAvatar(
+                        backgroundColor: item.type == 1
+                            ? Colors.green.shade50
+                            : Colors.orange.shade50,
+                        child: Icon(
+                          item.type == 1 ? Icons.add : Icons.remove,
+                          size: 18,
+                          color: item.type == 1
+                              ? Colors.green.shade700
+                              : Colors.orange.shade700,
+                        ),
+                      ),
+                      title: Text(item.name),
+                      subtitle: Text(
+                        '${item.typeLabel} · ${item.system ? '系统预设' : '自定义'}',
+                      ),
+                      trailing: item.system
+                          ? Chip(
+                              label: const Text('系统'),
+                              visualDensity: VisualDensity.compact,
+                              backgroundColor: Colors.grey.shade100,
+                            )
+                          : IconButton(
+                              tooltip: '删除',
+                              icon: Icon(
+                                Icons.delete_outline,
+                                color: Colors.red.shade400,
+                              ),
+                              onPressed: () => _confirmDelete(item),
+                            ),
+                    );
+                  },
+                ),
+              ),
             ),
           ),
         ],
       ),
-    );
-  }
-
-  Widget _buildBody(BuildContext context) {
-    if (_loading && _items.isEmpty) {
-      return const Center(child: CircularProgressIndicator());
-    }
-
-    if (_error != null) {
-      return Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(_error!),
-            const SizedBox(height: 12),
-            FilledButton(onPressed: _loadCategories, child: const Text('重试')),
-          ],
-        ),
-      );
-    }
-
-    if (_items.isEmpty) {
-      return const Center(child: Text('暂无分类'));
-    }
-
-    return ListView.separated(
-      itemCount: _items.length,
-      separatorBuilder: (context, index) =>
-          Divider(height: 1, color: Colors.grey.shade200),
-      itemBuilder: (context, index) {
-        final item = _items[index];
-        return ListTile(
-          leading: CircleAvatar(
-            backgroundColor: item.type == 1
-                ? Colors.green.shade50
-                : Colors.orange.shade50,
-            child: Icon(
-              item.type == 1 ? Icons.add : Icons.remove,
-              size: 18,
-              color: item.type == 1
-                  ? Colors.green.shade700
-                  : Colors.orange.shade700,
-            ),
-          ),
-          title: Text(item.name),
-          subtitle: Text(
-            '${item.typeLabel} · ${item.system ? '系统预设' : '自定义'}',
-          ),
-          trailing: item.system
-              ? Chip(
-                  label: const Text('系统'),
-                  visualDensity: VisualDensity.compact,
-                  backgroundColor: Colors.grey.shade100,
-                )
-              : IconButton(
-                  tooltip: '删除',
-                  icon: Icon(Icons.delete_outline, color: Colors.red.shade400),
-                  onPressed: () => _confirmDelete(item),
-                ),
-        );
-      },
     );
   }
 }

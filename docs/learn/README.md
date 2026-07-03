@@ -17,6 +17,7 @@
 | 9 | [09-flutter-auth.md](09-flutter-auth.md) | Flutter 登录与路由守卫 |
 | 10 | [10-flutter-stats-category.md](10-flutter-stats-category.md) | Flutter 统计与分类 |
 | 11 | [11-flutter-bill-crud.md](11-flutter-bill-crud.md) | Flutter 账单 CRUD |
+| 12 | [12-flutter-ux-polish.md](12-flutter-ux-polish.md) | Flutter 交互与体验优化 |
 
 ## Flutter
 

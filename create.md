@@ -56,4 +56,4 @@
 - [x] `flutter_app/` 阶段2（登录/注册、Token、路由守卫）
 - [x] `flutter_app/` 阶段3（首页统计卡片 + 分类列表）
 - [x] `flutter_app/` 阶段4（账单列表/表单 CRUD）
-- [ ] `flutter_app/` 阶段5
+- [x] `flutter_app/` 阶段5（交互优化、统一反馈、401 处理）

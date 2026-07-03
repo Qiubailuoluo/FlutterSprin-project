@@ -31,6 +31,10 @@ class AppTheme {
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(6)),
         contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
       ),
+      snackBarTheme: SnackBarThemeData(
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+      ),
     );
   }
 }

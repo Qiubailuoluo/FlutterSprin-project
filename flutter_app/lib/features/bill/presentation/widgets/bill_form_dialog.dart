@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:ledger/core/di/app_services.dart';
+import 'package:ledger/core/feedback/app_messenger.dart';
 import 'package:ledger/features/bill/data/bill_api.dart';
 import 'package:ledger/features/bill/data/models/bill_item.dart';
 import 'package:ledger/features/category/data/category_api.dart';
@@ -105,13 +106,13 @@ class _BillFormDialogState extends State<_BillFormDialog> {
   Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) return;
     if (_categoryId == null) {
-      _showError('请选择分类');
+      AppMessenger.showError('请选择分类');
       return;
     }
 
     final amount = double.tryParse(_amountController.text.trim());
     if (amount == null || amount <= 0) {
-      _showError('请输入有效金额');
+      AppMessenger.showError('请输入有效金额');
       return;
     }
 
@@ -143,14 +144,10 @@ class _BillFormDialogState extends State<_BillFormDialog> {
     if (result.isSuccess) {
       Navigator.pop(context, true);
     } else {
-      _showError(result.message.isNotEmpty ? result.message : '保存失败');
+      AppMessenger.showError(
+        result.message.isNotEmpty ? result.message : '保存失败',
+      );
     }
-  }
-
-  void _showError(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(message)),
-    );
   }
 
   @override

@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:ledger/core/di/app_services.dart';
+import 'package:ledger/core/feedback/app_messenger.dart';
+import 'package:ledger/core/widgets/async_state_view.dart';
+import 'package:ledger/core/widgets/confirm_dialog.dart';
+import 'package:ledger/core/widgets/page_header.dart';
 import 'package:ledger/features/bill/data/bill_api.dart';
 import 'package:ledger/features/bill/data/models/bill_item.dart';
 import 'package:ledger/features/bill/data/models/bill_page.dart' as models;
@@ -67,59 +71,48 @@ class _BillListPageState extends State<BillListPage> {
   Future<void> _openForm({BillItem? bill}) async {
     final saved = await showBillFormDialog(context: context, initial: bill);
     if (saved == true) {
+      AppMessenger.showSuccess(bill == null ? '账单已创建' : '账单已更新');
       await _loadBills();
     }
   }
 
   Future<void> _confirmDelete(BillItem bill) async {
-    final confirmed = await showDialog<bool>(
+    final confirmed = await showConfirmDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('删除账单'),
-        content: Text('确定删除「${bill.categoryName} ¥${bill.amount}」吗？'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: const Text('取消'),
-          ),
-          FilledButton(
-            onPressed: () => Navigator.pop(context, true),
-            child: const Text('删除'),
-          ),
-        ],
-      ),
+      title: '删除账单',
+      message: '确定删除「${bill.categoryName} ¥${bill.amount}」吗？',
+      confirmText: '删除',
+      destructive: true,
     );
 
-    if (confirmed != true || !mounted) return;
+    if (!confirmed || !mounted) return;
 
     final result = await _billApi.delete(bill.id);
     if (!mounted) return;
 
     if (result.isSuccess) {
-      _showSnack('已删除');
+      AppMessenger.showSuccess('已删除');
       await _loadBills();
     } else {
-      _showSnack(result.message.isNotEmpty ? result.message : '删除失败');
+      AppMessenger.showError(
+        result.message.isNotEmpty ? result.message : '删除失败',
+      );
     }
-  }
-
-  void _showSnack(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(message)),
-    );
   }
 
   @override
   Widget build(BuildContext context) {
+    final records = _pageData?.records ?? [];
+    final isEmpty = !_loading && _error == null && records.isEmpty;
+
     return Padding(
       padding: const EdgeInsets.all(24),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            children: [
-              Text('账单管理', style: Theme.of(context).textTheme.headlineSmall),
-              const Spacer(),
+          PageHeader(
+            title: '账单管理',
+            actions: [
               FilledButton.icon(
                 onPressed: () => _openForm(),
                 icon: const Icon(Icons.add, size: 18),
@@ -148,76 +141,48 @@ class _BillListPageState extends State<BillListPage> {
             ],
           ),
           const SizedBox(height: 16),
-          Expanded(child: _buildBody(context)),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildBody(BuildContext context) {
-    if (_loading && _pageData == null) {
-      return const Card(
-        child: Center(child: CircularProgressIndicator()),
-      );
-    }
-
-    if (_error != null) {
-      return Card(
-        child: Center(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(_error!),
-              const SizedBox(height: 12),
-              FilledButton(onPressed: _loadBills, child: const Text('重试')),
-            ],
-          ),
-        ),
-      );
-    }
-
-    final records = _pageData?.records ?? [];
-    if (records.isEmpty) {
-      return Card(
-        child: Center(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const Text('暂无账单'),
-              const SizedBox(height: 12),
-              OutlinedButton(
-                onPressed: () => _openForm(),
-                child: const Text('新增第一笔'),
-              ),
-            ],
-          ),
-        ),
-      );
-    }
-
-    return Card(
-      clipBehavior: Clip.antiAlias,
-      child: Column(
-        children: [
           Expanded(
-            child: SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: SingleChildScrollView(
-                child: DataTable(
-                  columns: const [
-                    DataColumn(label: Text('日期')),
-                    DataColumn(label: Text('分类')),
-                    DataColumn(label: Text('类型')),
-                    DataColumn(label: Text('金额')),
-                    DataColumn(label: Text('备注')),
-                    DataColumn(label: Text('操作')),
+            child: Card(
+              clipBehavior: Clip.antiAlias,
+              child: AsyncStateView(
+                loading: _loading && _pageData == null,
+                error: _error,
+                onRetry: _loadBills,
+                isEmpty: isEmpty,
+                emptyMessage: '暂无账单',
+                emptyIcon: Icons.receipt_long_outlined,
+                emptyAction: OutlinedButton(
+                  onPressed: () => _openForm(),
+                  child: const Text('新增第一笔'),
+                ),
+                child: Column(
+                  children: [
+                    Expanded(
+                      child: SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: SingleChildScrollView(
+                          child: DataTable(
+                            columns: const [
+                              DataColumn(label: Text('日期')),
+                              DataColumn(label: Text('分类')),
+                              DataColumn(label: Text('类型')),
+                              DataColumn(label: Text('金额')),
+                              DataColumn(label: Text('备注')),
+                              DataColumn(label: Text('操作')),
+                            ],
+                            rows: records
+                                .map((bill) => _buildRow(context, bill))
+                                .toList(),
+                          ),
+                        ),
+                      ),
+                    ),
+                    if (_pageData != null) _buildPagination(context),
                   ],
-                  rows: records.map((bill) => _buildRow(context, bill)).toList(),
                 ),
               ),
             ),
           ),
-          if (_pageData != null) _buildPagination(context),
         ],
       ),
     );
@@ -261,7 +226,11 @@ class _BillListPageState extends State<BillListPage> {
               ),
               IconButton(
                 tooltip: '删除',
-                icon: Icon(Icons.delete_outline, size: 20, color: Colors.red.shade400),
+                icon: Icon(
+                  Icons.delete_outline,
+                  size: 20,
+                  color: Colors.red.shade400,
+                ),
                 onPressed: () => _confirmDelete(bill),
               ),
             ],

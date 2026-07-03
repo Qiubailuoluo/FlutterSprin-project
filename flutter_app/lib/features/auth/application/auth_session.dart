@@ -37,8 +37,7 @@ class AuthSession extends ChangeNotifier {
       _user = result.data;
     } else {
       // Token 失效或后端拒绝，清除本地缓存
-      await _tokenStorage.clearToken();
-      _user = null;
+      await forceLogout();
     }
     notifyListeners();
   }
@@ -82,9 +81,14 @@ class AuthSession extends ChangeNotifier {
     try {
       await _authApi.logout();
     } finally {
-      await _tokenStorage.clearToken();
-      _user = null;
-      notifyListeners();
+      await forceLogout();
     }
+  }
+
+  /// 强制退出（不请求后端），用于 401 或 Token 校验失败。
+  Future<void> forceLogout() async {
+    await _tokenStorage.clearToken();
+    _user = null;
+    notifyListeners();
   }
 }

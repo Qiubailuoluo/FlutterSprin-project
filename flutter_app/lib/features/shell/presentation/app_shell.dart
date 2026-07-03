@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:ledger/app/router/app_router.dart';
 import 'package:ledger/core/di/app_services.dart';
+import 'package:ledger/core/feedback/app_messenger.dart';
 import 'package:ledger/features/auth/application/auth_session.dart';
 
 /// 应用外壳：侧边栏 + 顶栏 + 内容区。
@@ -66,7 +67,10 @@ class AppShell extends StatelessWidget {
                       nickname: _auth.user?.nickname,
                       onLogout: () async {
                         await _auth.logout();
-                        if (context.mounted) context.go(AppRoutes.login);
+                        if (context.mounted) {
+                          AppMessenger.showInfo('已退出登录');
+                          context.go(AppRoutes.login);
+                        }
                       },
                     ),
                     Expanded(child: child),
