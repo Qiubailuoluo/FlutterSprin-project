@@ -57,3 +57,24 @@
 - [x] `flutter_app/` 阶段3（首页统计卡片 + 分类列表）
 - [x] `flutter_app/` 阶段4（账单列表/表单 CRUD）
 - [x] `flutter_app/` 阶段5（交互优化、统一反馈、401 处理）
+
+## MVP 状态
+
+**学习用 MVP 已全部完成**（后端 5 阶段 + Flutter 5 阶段）。可选扩展见下方。
+
+### 已完成能力
+
+- 注册 / 登录 / 退出（JWT + Redis）
+- 分类（系统 + 自定义）
+- 账单 CRUD + 分页筛选
+- 本月收入 / 支出 / 结余统计（Redis 缓存）
+- Flutter Web（Edge）完整 UI
+
+### 未做 / 可选扩展（不影响 MVP 完结）
+
+- Windows 桌面（需安装 Visual Studio C++）
+- 图表、导出 Excel、多账本、预算提醒等
+- TDesign 换肤（已确认不需要）
+- 生产部署（HTTPS、Docker、CI/CD）
+
+演示数据：`docs/database/seed_testuser.sql`

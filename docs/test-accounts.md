@@ -10,6 +10,26 @@
 | 密码 | `123456` |
 | 昵称 | `测试用户` |
 
+## 演示数据（推荐）
+
+执行 `docs/database/seed_testuser.sql` 可为 testuser 写入完整演示数据（可重复执行）：
+
+```powershell
+& "C:\Program Files\MySQL\MySQL Server 8.0\bin\mysql.exe" -u root -proot --default-character-set=utf8mb4 ledger_db -e "source D:/FlutterSp-project/docs/database/seed_testuser.sql"
+```
+
+写入后概览：
+
+| 项 | 数量/金额 |
+|----|-----------|
+| 账单总数 | 19 条（含 6 月 + 7 月） |
+| 自定义分类 | 2 个（宠物、健身） |
+| 2026-07 收入 | ¥9200.00 |
+| 2026-07 支出 | ¥2912.90 |
+| 2026-07 结余 | ¥6287.10 |
+
+登录 Flutter 首页可看到本月统计；账单页可分页浏览。若统计仍为旧数字，等 5 分钟缓存过期或重启后端。
+
 ## 快速登录
 
 ```powershell
