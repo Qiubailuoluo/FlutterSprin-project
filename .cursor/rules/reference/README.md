@@ -1,7 +1,8 @@
-# reference — 运行副本（已裁剪）
+﻿# reference — 运行副本（已裁剪）
 
 本目录供 Cursor `@` 引用。**正文以 `docs/reference/` 为全集源**；改规则请先改源，再同步到本目录，然后按本项目栈裁剪。
 
-演练流水账见源目录 [`docs/reference/DRILL.md`](../../../docs/reference/DRILL.md)（可选、阶段性，可清空）。
+- 后端专题当前 = **Java/Spring**（见 `backend/README.md`）；Go/Python **有内容再建**，不建空目录。
+- 演练流水账见 [`docs/reference/DRILL.md`](../../../docs/reference/DRILL.md)（可选、可清空）。
 
-用法协议见 [project-bootstrap.mdc](project-bootstrap.mdc)。大需求见 [workflow/task-breakdown.mdc](workflow/task-breakdown.mdc)。文档分层见 [workflow/docs-sync.mdc](workflow/docs-sync.mdc) 与 `docs/README.md`。
+用法： [project-bootstrap.mdc](project-bootstrap.mdc) · [task-breakdown.mdc](workflow/task-breakdown.mdc) · [docs-sync.mdc](workflow/docs-sync.mdc)

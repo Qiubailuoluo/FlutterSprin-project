@@ -6,7 +6,7 @@
 
 1. 按架构/栈删除或忽略未用目录（仅针对**运行副本**）  
 2. 大需求先按 [workflow/task-breakdown.mdc](workflow/task-breakdown.mdc)：**清单 + 模式必出**；混合分步/一口气 + **进度落盘**  
-3. 二开遵守 [workflow/code-change.mdc](workflow/code-change.mdc)  
+3. 二开遵守 [workflow/code-change.mdc](workflow/code-change.mdc)（需求不清先澄清；禁止盲目改）  
 4. **每个 P** 声明 1～3 个主专题 → [docs-sync](workflow/docs-sync.mdc) / [acceptance](workflow/acceptance.mdc)（含最低验证）  
 
 ## 与 Cursor / 项目规则的关系（避免伤项目）
@@ -37,7 +37,7 @@
 |------|------|
 | [project-bootstrap.mdc](project-bootstrap.mdc) | 高效用法入口 + 双副本同步 |
 | [workflow/task-breakdown.mdc](workflow/task-breakdown.mdc) | P1…Pn、混合执行、每 P 主规则 |
-| [workflow/code-change.mdc](workflow/code-change.mdc) | 修改已有代码 |
+| [workflow/code-change.mdc](workflow/code-change.mdc) | 先澄清再改；风险/方案/预期；最小改动 |
 | [workflow/docs-sync.mdc](workflow/docs-sync.mdc) | docs 同步 |
 | [workflow/acceptance.mdc](workflow/acceptance.mdc) | 收尾 + 最低验证 + 基础设施测试 |
 
@@ -49,8 +49,8 @@ docs/reference/          ← 全集源（改这里）
   project-bootstrap.mdc
   workflow/
   middleware/
-  backend/
-  frontend/
+  backend/                  ← 当前 = Java/Spring；Go/Python 有内容再建（见 backend/README）
+  frontend/                 ← 按栈：flutter / vue / web
 
 .cursor/rules/reference/ ← 运行副本（同步后再裁剪未用栈）
 ```
@@ -68,7 +68,7 @@ docs/reference/          ← 全集源（改这里）
 请先阅读并遵守 @.cursor/rules/reference/project-bootstrap.mdc：
 1）运行副本裁剪未用目录；改规则只改 docs/reference 再同步；
 2）大需求：task-breakdown 清单+模式必出；每 P 主规则 1～3；混合分步/一口气+落盘；
-3）code-change 最小改动；
+3）code-change：需求不清先澄清（风险/方案/预期），确认后再改；
 4）冲突以本地代码与项目正式 rules 为准；
 5）docs-sync；收尾 acceptance（最低验证；改 Result/异常/鉴权核心须带测试）。
 当前任务：……

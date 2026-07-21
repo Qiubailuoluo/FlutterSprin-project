@@ -5,7 +5,7 @@
 | 文件 | 用途 |
 |------|------|
 | [task-breakdown.mdc](task-breakdown.mdc) | P1…Pn；清单+模式必出；每 P 主规则；混合+落盘 |
-| [code-change.mdc](code-change.mdc) | 修改已有代码（最小改动） |
+| [code-change.mdc](code-change.mdc) | 先澄清再改；风险/方案/预期；最小改动 |
 | [docs-sync.mdc](docs-sync.mdc) | 项目 `docs/` 创建与代码同步 |
 | [acceptance.mdc](acceptance.mdc) | 收尾；最低验证；基础设施须测试 |
 
