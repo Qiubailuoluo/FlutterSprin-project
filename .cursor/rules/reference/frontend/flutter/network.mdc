@@ -1,0 +1,28 @@
+---
+description: 【参考/二开补充】Flutter 网络与统一响应解析；冲突时以本地 Dio 封装为准
+globs:
+alwaysApply: false
+---
+
+# Flutter 网络（参考）
+
+> **优先级**：本地 Dio/拦截器、Token 存储 > 本文件。
+
+## 约定
+
+- 基址与环境配置走项目配置，禁止在 Widget 里硬编码生产域名。  
+- 请求头 Token 由拦截器统一注入；过期/401 走统一登出或刷新（跟项目）。  
+- 后端若为 `{ code, message, data, errorId? }`：在 core 统一解析；`code` 非成功时转成可展示错误，不要每页复制解析。  
+- **错误展示**：业务失败用 `message`；`code == 500` 用固定「服务异常」类文案并附带 `errorId`（便于用户反馈排查）；网络层失败用本地文案，不展示 Dio/堆栈细节。
+
+## 禁止
+
+- UI 层直接 `jsonDecode` 当唯一数据源。  
+- 把 AccessKey 等服务端密钥放进客户端。  
+- 同一接口多处复制粘贴路径字符串——集中到 API client。  
+- 把后端原始异常、整段 JSON、堆栈直接 Toast 给用户。
+
+## AI 行为
+
+- 新接口：先加 data 层方法，再给页面调用。  
+- 错误提示与 loading 跟现有页面模式一致；优先走统一的 `displayMessage` / `showApiError`（若项目已有）。

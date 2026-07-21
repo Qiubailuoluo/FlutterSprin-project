@@ -30,3 +30,6 @@ jwt:
 logging:
   level:
     com.example.ledger: debug
+  pattern:
+    # requestId 来自 RequestIdFilter → MDC，异常排查时搜该编号
+    console: "%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} [req=%X{requestId}] - %msg%n"

@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:ledger/core/di/app_services.dart';
 import 'package:ledger/core/feedback/app_messenger.dart';
+import 'package:ledger/core/l10n/app_strings.dart';
 import 'package:ledger/features/bill/data/bill_api.dart';
 import 'package:ledger/features/bill/data/models/bill_item.dart';
 import 'package:ledger/features/category/data/category_api.dart';
 import 'package:ledger/features/category/data/models/category_item.dart';
+import 'package:ledger/features/member/data/member_api.dart';
+import 'package:ledger/features/member/data/models/member_item.dart';
 
 /// 账单新增/编辑表单对话框。
 ///
@@ -35,11 +38,15 @@ class _BillFormDialogState extends State<_BillFormDialog> {
 
   final BillApi _billApi = AppServices.instance.billApi;
   final CategoryApi _categoryApi = AppServices.instance.categoryApi;
+  final MemberApi _memberApi = AppServices.instance.memberApi;
 
   late int _type;
   int? _categoryId;
+  /// null = 未指定；编辑清空时传 0 给后端。
+  int? _memberId;
   DateTime _billDate = DateTime.now();
   List<CategoryItem> _categories = [];
+  List<MemberItem> _members = [];
   bool _loadingCategories = true;
   bool _submitting = false;
 
@@ -51,12 +58,25 @@ class _BillFormDialogState extends State<_BillFormDialog> {
     final initial = widget.initial;
     _type = initial?.type ?? 2;
     _categoryId = initial?.categoryId;
+    _memberId = initial?.memberId;
     if (initial != null) {
       _amountController.text = initial.amount;
       _remarkController.text = initial.remark ?? '';
       _billDate = DateTime.tryParse(initial.billDate) ?? DateTime.now();
     }
     _loadCategories();
+    _loadMembers();
+  }
+
+  Future<void> _loadMembers() async {
+    final result = await _memberApi.list();
+    if (!mounted) return;
+    setState(() {
+      _members = result.data ?? [];
+      if (_memberId != null && !_members.any((m) => m.id == _memberId)) {
+        _memberId = null;
+      }
+    });
   }
 
   @override
@@ -129,6 +149,7 @@ class _BillFormDialogState extends State<_BillFormDialog> {
             amount: amount,
             billDate: billDate,
             remark: remark.isEmpty ? '' : remark,
+            memberId: _memberId ?? 0,
           )
         : await _billApi.create(
             categoryId: _categoryId!,
@@ -136,6 +157,7 @@ class _BillFormDialogState extends State<_BillFormDialog> {
             amount: amount,
             billDate: billDate,
             remark: remark.isEmpty ? null : remark,
+            memberId: _memberId,
           );
 
     if (!mounted) return;
@@ -199,6 +221,34 @@ class _BillFormDialogState extends State<_BillFormDialog> {
                     validator: (value) =>
                         value == null ? '请选择分类' : null,
                   ),
+                const SizedBox(height: 12),
+                DropdownButtonFormField<int?>(
+                  key: ValueKey('member-$_memberId'),
+                  initialValue: _memberId,
+                  decoration: InputDecoration(
+                    labelText: AppStrings.t(
+                      AppServices.instance.locale.language,
+                      'bill.member',
+                    ),
+                  ),
+                  items: [
+                    DropdownMenuItem<int?>(
+                      value: null,
+                      child: Text(
+                        AppStrings.t(
+                          AppServices.instance.locale.language,
+                          'bill.memberNone',
+                        ),
+                      ),
+                    ),
+                    for (final m in _members)
+                      DropdownMenuItem<int?>(
+                        value: m.id,
+                        child: Text(m.name),
+                      ),
+                  ],
+                  onChanged: (value) => setState(() => _memberId = value),
+                ),
                 const SizedBox(height: 12),
                 TextFormField(
                   controller: _amountController,

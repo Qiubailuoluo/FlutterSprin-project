@@ -23,6 +23,8 @@
 | categoryId | long | 否 | 分类 ID |
 | startDate | string | 否 | 开始日期 yyyy-MM-dd |
 | endDate | string | 否 | 结束日期 yyyy-MM-dd |
+| keyword | string | 否 | 备注关键字，模糊匹配（含关键字的账单） |
+| （响应）memberId / memberName | | | 可选家庭成员 |
 
 **响应 data**
 
@@ -60,7 +62,8 @@
   "type": 2,
   "amount": 35.50,
   "billDate": "2026-07-01",
-  "remark": "午饭"
+  "remark": "午饭",
+  "memberId": 1
 }
 ```
 

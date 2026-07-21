@@ -3,7 +3,9 @@ import 'package:go_router/go_router.dart';
 import 'package:ledger/app/router/app_router.dart';
 import 'package:ledger/core/di/app_services.dart';
 import 'package:ledger/core/feedback/app_messenger.dart';
+import 'package:ledger/core/l10n/app_strings.dart';
 import 'package:ledger/features/auth/application/auth_session.dart';
+import 'package:ledger/features/auth/presentation/widgets/profile_dialog.dart';
 
 /// 应用外壳：侧边栏 + 顶栏 + 内容区。
 class AppShell extends StatelessWidget {
@@ -11,37 +13,60 @@ class AppShell extends StatelessWidget {
 
   final Widget child;
 
-  static const _menuItems = [
-    _MenuItem(icon: Icons.home_outlined, label: '首页', route: AppRoutes.home),
-    _MenuItem(
-      icon: Icons.receipt_long_outlined,
-      label: '账单',
-      route: AppRoutes.bills,
-    ),
-    _MenuItem(
-      icon: Icons.category_outlined,
-      label: '分类',
-      route: AppRoutes.categories,
-    ),
-  ];
-
   AuthSession get _auth => AppServices.instance.authSession;
+
+  List<_MenuItem> _menuItems(BuildContext context) {
+    final lang = AppServices.instance.locale.language;
+    final items = <_MenuItem>[
+      _MenuItem(
+        icon: Icons.home_outlined,
+        label: '首页',
+        route: AppRoutes.home,
+      ),
+      _MenuItem(
+        icon: Icons.receipt_long_outlined,
+        label: '账单',
+        route: AppRoutes.bills,
+      ),
+      _MenuItem(
+        icon: Icons.pie_chart_outline,
+        label: AppStrings.t(lang, 'nav.stats'),
+        route: AppRoutes.stats,
+      ),
+      _MenuItem(
+        icon: Icons.category_outlined,
+        label: '分类',
+        route: AppRoutes.categories,
+      ),
+    ];
+    if (_auth.isAdmin) {
+      items.add(
+        _MenuItem(
+          icon: Icons.manage_accounts_outlined,
+          label: '账户管理',
+          route: AppRoutes.adminUsers,
+        ),
+      );
+    }
+    return items;
+  }
 
   @override
   Widget build(BuildContext context) {
     final location = GoRouterState.of(context).uri.toString();
 
     return ListenableBuilder(
-      listenable: _auth,
+      listenable: Listenable.merge([_auth, AppServices.instance.locale]),
       builder: (context, _) {
+        final items = _menuItems(context);
         return Scaffold(
           body: Row(
             children: [
               NavigationRail(
                 extended: MediaQuery.sizeOf(context).width > 900,
-                selectedIndex: _selectedIndex(location),
+                selectedIndex: _selectedIndex(location, items),
                 onDestinationSelected: (index) {
-                  context.go(_menuItems[index].route);
+                  context.go(items[index].route);
                 },
                 leading: Padding(
                   padding: const EdgeInsets.symmetric(vertical: 16),
@@ -51,7 +76,7 @@ class AppShell extends StatelessWidget {
                   ),
                 ),
                 destinations: [
-                  for (final item in _menuItems)
+                  for (final item in items)
                     NavigationRailDestination(
                       icon: Icon(item.icon),
                       label: Text(item.label),
@@ -65,6 +90,7 @@ class AppShell extends StatelessWidget {
                     _TopBar(
                       title: _titleForLocation(location),
                       nickname: _auth.user?.nickname,
+                      onEditProfile: () => showProfileDialog(context),
                       onLogout: () async {
                         await _auth.logout();
                         if (context.mounted) {
@@ -84,15 +110,20 @@ class AppShell extends StatelessWidget {
     );
   }
 
-  int _selectedIndex(String location) {
-    final index = _menuItems.indexWhere((m) => location.startsWith(m.route));
+  int _selectedIndex(String location, List<_MenuItem> items) {
+    final index = items.indexWhere((m) => location.startsWith(m.route));
     return index >= 0 ? index : 0;
   }
 
   String _titleForLocation(String location) {
+    final lang = AppServices.instance.locale.language;
     if (location.startsWith(AppRoutes.home)) return '首页';
     if (location.startsWith(AppRoutes.bills)) return '账单管理';
+    if (location.startsWith(AppRoutes.stats)) {
+      return AppStrings.t(lang, 'stats.title');
+    }
     if (location.startsWith(AppRoutes.categories)) return '分类管理';
+    if (location.startsWith(AppRoutes.adminUsers)) return '账户管理';
     return '小账本';
   }
 }
@@ -101,11 +132,13 @@ class _TopBar extends StatelessWidget {
   const _TopBar({
     required this.title,
     this.nickname,
+    required this.onEditProfile,
     required this.onLogout,
   });
 
   final String title;
   final String? nickname;
+  final VoidCallback onEditProfile;
   final VoidCallback onLogout;
 
   @override
@@ -122,10 +155,12 @@ class _TopBar extends StatelessWidget {
             Text(title, style: Theme.of(context).textTheme.titleLarge),
             const Spacer(),
             if (nickname != null) ...[
-              Icon(Icons.person_outline, size: 18, color: Colors.grey.shade600),
-              const SizedBox(width: 6),
-              Text(nickname!, style: Theme.of(context).textTheme.bodyMedium),
-              const SizedBox(width: 16),
+              TextButton.icon(
+                onPressed: onEditProfile,
+                icon: Icon(Icons.person_outline, size: 18, color: Colors.grey.shade600),
+                label: Text(nickname!, style: Theme.of(context).textTheme.bodyMedium),
+              ),
+              const SizedBox(width: 8),
             ],
             TextButton.icon(
               onPressed: onLogout,

@@ -1,0 +1,88 @@
+---
+description: 【参考/二开补充】全局异常、errorId 关联排查与对外安全；冲突时以本地 Advice 与 Result 为准
+globs:
+alwaysApply: false
+---
+
+# 全局异常处理（参考）
+
+> **优先级**：本地 `@RestControllerAdvice`、错误码枚举、Result 实现 > 本文件。  
+> 面向**实际开发**：可关联排查 + 对外不泄密；学习项目同样适用，勿省略 errorId。
+
+## 目标
+
+1. Controller 失败路径统一成 JSON 错误体，禁止每接口 try-catch。  
+2. **服务端能靠编号快速定位**一次请求与堆栈。  
+3. **客户端永不收到**堆栈、SQL、内部路径、密钥等。
+
+## 三层信息（必须分清）
+
+| 层 | 字段/位置 | 用途 | 是否给前端 |
+|----|-----------|------|------------|
+| 协议/业务码 | `code`（如 400/401/403/500） | 前端分支、文档 | 是 |
+| 用户文案 | `message` | Toast / 表单提示 | 是（须安全、可文档化） |
+| 关联编号 | `errorId`（建议 = 本次 `requestId`） | 用户报障 → 搜日志 | **仅未知异常等需排查场景**；成功时省略 |
+
+不要把「业务场景枚举码」和「关联编号」混成一个字段：前者可选扩展，后者专治「怎么找到那次 500」。
+
+## 请求关联（MDC）
+
+- 每个请求生成或透传 `requestId`（如 Header `X-Request-Id`，无则服务端生成）。  
+- 写入 MDC，日志 pattern 带 `%X{requestId}`。  
+- 响应头回写同一 `X-Request-Id`，便于网关/前端联调。  
+- 过滤器 `finally` 必须 `MDC.clear()`。
+
+## 异常分类与处理
+
+| 类型 | 处理 | 响应 |
+|------|------|------|
+| 业务异常 | Service `throw`；可选 `log.warn`（带 requestId，**不打堆栈**或仅简短） | `code`+安全 `message`；一般**不**带 `errorId` |
+| 参数校验 | 取字段校验文案 | 400 + 字段 message |
+| 404 / 无资源 | 映射 NOT_FOUND | 固定文案，**不用**框架原始 `e.getMessage()` 对外 |
+| 未捕获异常 | `log.error("… errorId=…", e)` **含完整堆栈** | `code=500`，`message` 固定「服务器错误」类，**必须**带 `errorId` |
+
+## 对外安全（禁止）
+
+- `Result.fail(500, e.getMessage())`、把堆栈/`printStackTrace` 塞进响应。  
+- 校验失败返回 `BindingResult.toString()`。  
+- message 含 SQL、表名细节、绝对路径、Token、密码。  
+- 开发环境对外「放开堆栈」——排查靠日志 + errorId，不靠响应体。
+
+## 与统一响应体
+
+```json
+{
+  "code": 500,
+  "message": "服务器错误",
+  "data": null,
+  "errorId": "a1b2c3d4"
+}
+```
+
+- 成功：`errorId` 不出现（`NON_NULL`）。  
+- 业务失败：通常无 `errorId`。  
+- `data` 失败时多为 null。  
+- 具体数字码以项目 `ResultCode` 为准。
+
+## Controller / Service
+
+- Controller：不吞异常、不把异常糊进 `data`。  
+- Service：可预期失败抛业务异常 + 已有错误码；先查枚举再扩展，避免魔法数字。  
+- 不要 catch 后只 log 不抛，导致前端以为成功。
+
+## 前端约定（配合 `frontend/*/network`）
+
+| `code` | 展示 |
+|--------|------|
+| 业务失败（非 500） | 用 `message`（或按 code 做 i18n 映射） |
+| 500 | 固定「服务异常，请稍后重试」+ 展示/可复制 `errorId` |
+| 无响应/网络错误 | 本地「网络异常」类文案，不展示底层库细节 |
+
+禁止把原始异常字符串、响应整包 JSON 直接弹给用户。
+
+## AI 行为（参考）
+
+- 改异常体系时同步：`Result` / Advice / 日志 MDC / API 文档 / 前端 `ApiResult`。  
+- 新增错误场景：先查已有错误码；对外 message 保持短、安全。  
+- 生成接口默认「Service 抛业务异常 + 已有 Advice」，不新建第二套全局处理。  
+- 兜底路径必须带 **errorId + 堆栈日志**；不得只 return 500 无关联号。

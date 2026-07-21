@@ -44,6 +44,7 @@ class BillApi {
     required double amount,
     required String billDate,
     String? remark,
+    int? memberId,
   }) {
     return _client.post(
       ApiConstants.billsPath,
@@ -53,6 +54,7 @@ class BillApi {
         'amount': amount,
         'billDate': billDate,
         if (remark != null && remark.isNotEmpty) 'remark': remark,
+        if (memberId != null) 'memberId': memberId,
       },
       fromJsonT: (json) => BillItem.fromJson(json as Map<String, dynamic>),
     );
@@ -66,6 +68,7 @@ class BillApi {
     double? amount,
     String? billDate,
     String? remark,
+    int? memberId,
   }) {
     return _client.put(
       '${ApiConstants.billsPath}/$id',
@@ -75,6 +78,7 @@ class BillApi {
         'amount': ?amount,
         'billDate': ?billDate,
         'remark': ?remark,
+        'memberId': ?memberId,
       },
       fromJsonT: (json) => BillItem.fromJson(json as Map<String, dynamic>),
     );

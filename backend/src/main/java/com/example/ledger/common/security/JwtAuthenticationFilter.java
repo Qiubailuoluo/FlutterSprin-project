@@ -1,5 +1,7 @@
 package com.example.ledger.common.security;
 
+import com.example.ledger.common.security.LoginUser;
+import com.example.ledger.common.security.UserRoles;
 import com.example.ledger.common.util.AuthRedisService;
 import com.example.ledger.common.util.JwtUtil;
 import io.jsonwebtoken.Claims;
@@ -49,9 +51,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 Claims claims = jwtUtil.parseToken(token);
                 Long userId = jwtUtil.getUserId(claims);
                 String username = claims.get("username", String.class);
+                Integer role = claims.get("role", Integer.class);
+                if (role == null) {
+                    role = UserRoles.USER;
+                }
                 // 必须 JWT 有效且 Redis 中存在，才算已登录
                 if (authRedisService.isTokenValid(userId, token)) {
-                    LoginUser loginUser = new LoginUser(userId, username);
+                    LoginUser loginUser = new LoginUser(userId, username, role);
                     UsernamePasswordAuthenticationToken authentication =
                             new UsernamePasswordAuthenticationToken(loginUser, null, loginUser.getAuthorities());
                     SecurityContextHolder.getContext().setAuthentication(authentication);

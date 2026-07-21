@@ -33,9 +33,11 @@ public Result<?> register(...) {
 
 | 异常类型 | 何时触发 | 返回 |
 |----------|----------|------|
-| BusinessException | Service 主动 throw | 自定义 message |
+| BusinessException | Service 主动 throw | 自定义 message（无 errorId） |
 | MethodArgumentNotValidException | @Valid 校验失败 | 字段上的 message |
-| Exception | 其它未捕获错误 | 500，并打日志 |
+| Exception | 其它未捕获错误 | 500 固定文案 + **errorId**，并打完整堆栈日志 |
+
+每个请求有 `requestId`（Header `X-Request-Id` / MDC）；500 的 `errorId` 与之相同，便于排查。
 
 ### 参数校验示例
 
@@ -63,3 +65,13 @@ Controller 调用 Service
 1. 注册时故意传空用户名，看返回的 message
 2. 在 `AuthServiceImpl` 找到 `throw new BusinessException` 的几处，理解何时该用 400 / 401 / 403
 3. 阅读 `GlobalExceptionHandler` 每个 `@ExceptionHandler` 方法
+
+## 自动化测试
+
+```powershell
+cd backend
+mvn -q test "-Dtest=ErrorIdsTest,ResultSerializationTest,GlobalExceptionHandlerTest,RequestIdFilterTest"
+
+cd ../flutter_app
+flutter test test/api_result_test.dart
+```

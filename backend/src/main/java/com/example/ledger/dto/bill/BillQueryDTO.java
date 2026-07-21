@@ -16,4 +16,7 @@ public class BillQueryDTO {
     private Long categoryId;
     private LocalDate startDate;
     private LocalDate endDate;
+
+    /** 可选：按备注模糊搜索（前后模糊） */
+    private String keyword;
 }

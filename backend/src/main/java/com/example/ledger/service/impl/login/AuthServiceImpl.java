@@ -2,6 +2,7 @@ package com.example.ledger.service.impl.login;
 
 import com.example.ledger.common.exception.BusinessException;
 import com.example.ledger.common.result.ResultCode;
+import com.example.ledger.common.security.UserRoles;
 import com.example.ledger.common.util.AuthRedisService;
 import com.example.ledger.common.util.JwtUtil;
 import com.example.ledger.config.JwtProperties;
@@ -56,6 +57,7 @@ public class AuthServiceImpl implements AuthService {
         user.setPassword(passwordEncoder.encode(dto.getPassword()));
         user.setNickname(StringUtils.hasText(dto.getNickname()) ? dto.getNickname() : dto.getUsername());
         user.setStatus(1);
+        user.setRole(UserRoles.USER);
         userMapper.insert(user);
         return RegisterVO.builder()
                 .userId(user.getId())
@@ -78,7 +80,7 @@ public class AuthServiceImpl implements AuthService {
         if (user.getStatus() != null && user.getStatus() == 0) {
             throw new BusinessException(ResultCode.FORBIDDEN, "账号已禁用");
         }
-        String token = jwtUtil.generateToken(user.getId(), user.getUsername());
+        String token = jwtUtil.generateToken(user.getId(), user.getUsername(), user.getRole());
         authRedisService.saveToken(user.getId(), token, jwtProperties.getExpirationMs());
         return LoginVO.builder()
                 .token(token)
@@ -86,6 +88,7 @@ public class AuthServiceImpl implements AuthService {
                 .userId(user.getId())
                 .username(user.getUsername())
                 .nickname(user.getNickname())
+                .role(user.getRole() == null ? UserRoles.USER : user.getRole())
                 .build();
     }
 

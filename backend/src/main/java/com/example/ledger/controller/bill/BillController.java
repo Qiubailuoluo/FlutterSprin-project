@@ -48,6 +48,7 @@ public class BillController {
      * @param categoryId  可选，分类 ID
      * @param startDate   可选，开始日期 yyyy-MM-dd
      * @param endDate     可选，结束日期 yyyy-MM-dd
+     * @param keyword     可选，备注关键字（模糊匹配）
      */
     @GetMapping
     public Result<BillPageVO> page(
@@ -56,7 +57,8 @@ public class BillController {
             @RequestParam(required = false) Integer type,
             @RequestParam(required = false) Long categoryId,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
+            @RequestParam(required = false) String keyword) {
         // Query 参数组装为 DTO，避免 Controller 层传递过多零散参数到 Service
         BillQueryDTO query = new BillQueryDTO();
         query.setPage(page);
@@ -65,6 +67,7 @@ public class BillController {
         query.setCategoryId(categoryId);
         query.setStartDate(startDate);
         query.setEndDate(endDate);
+        query.setKeyword(keyword);
         return Result.ok(billService.page(requireUserId(), query));
     }
 

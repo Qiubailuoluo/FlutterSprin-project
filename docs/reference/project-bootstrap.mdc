@@ -1,0 +1,90 @@
+---
+description: 【参考/二开补充】reference 高效用法：裁剪、拆解、每P主规则、双副本同步、收尾
+globs:
+alwaysApply: false
+---
+
+# reference 高效用法协议（参考）
+
+> 本包是**使用中的补充词典**。仅解压**不会**自动高效；**按本协议选用**才有用。  
+> **优先级**：本地代码与项目专用 rules/docs > 本包专题文件。  
+> 本包默认 Manual，**不会**自动覆盖项目正式 rules；只有被 `@` 或主动阅读时才进入对话。
+
+## 双副本同步（防漂移）
+
+若仓库同时存在：
+
+| 角色 | 典型路径 | 约定 |
+|------|----------|------|
+| **全集源（唯一修改入口）** | `docs/reference/` | **只改这里** |
+| **运行副本（裁剪后给 Cursor @）** | `.cursor/rules/reference/` | 改完源后 **同步覆盖** 到此 |
+
+- 禁止只改运行副本导致源包过期。  
+- 同步后运行副本可继续删除未用栈文件（裁剪），但**专题正文**以源为准再裁。  
+- 压缩分发前以 `docs/reference/`（或项目约定的源根）为准打包。
+
+## 目录怎么保证高效
+
+- 后端：`common` +（`monolith` **或** `microservices`）  
+- 前端：只留实际栈  
+- 工作流：`workflow/`  
+- **每个 P** 声明 **1～3 个**主专题 `.mdc`（流程件可不计）
+
+## 未使用内容：删除或忽略
+
+| 情况 | 做法 |
+|------|------|
+| 单体 | 留 `backend/common` + `monolith`；删/忽略 `microservices` |
+| 微服务 | 留 `common` + `microservices`；删/忽略 `monolith` |
+| 用 Vue | 删/忽略 `frontend/flutter` 等 |
+| 不用某中间件 | 删/忽略对应 middleware 文件 |
+
+## AI 必须遵守的工作流
+
+1. **开场**：读本文件；确认单体/微服务、前端栈；确认源/副本路径。  
+2. **裁剪**：运行副本删或忽略未用目录。  
+3. **拆解**：跨多层 → `workflow/task-breakdown`：**清单 + 模式必出**；混合执行（落盘为主，分步默认可被用户覆盖）。  
+4. **改代码**：`workflow/code-change`（先读后改、最小改动）。  
+5. **选件**：当前 **P** 只选 **1～3 个**主专题（非整需求绑死 3 个）。  
+6. **二开**：冲突以本地为准。  
+7. **文档**：`workflow/docs-sync`。  
+8. **收尾**：`workflow/acceptance`（含最低验证；基础设施须带测试）。  
+9. **改规则**：改 `docs/reference` 后同步到 `.cursor/rules/reference/`。
+
+## 人侧分发
+
+1. 从全集源同步/解压到 `.cursor/rules/reference/`。  
+2. 按架构与前端栈裁剪运行副本。  
+3. 保持 Manual；禁止整包 Always。  
+4. 先 `@` 本文件；大需求同时 `@` `task-breakdown`。
+
+## 按任务选用（检索表）
+
+路径相对 `reference/`。
+
+| 正在做的事 | 建议引用 |
+|------------|----------|
+| 本协议 | `project-bootstrap.mdc` |
+| 大需求拆解 | `workflow/task-breakdown.mdc` |
+| **修改已有代码 / 二开** | `workflow/code-change.mdc` |
+| 分层/建类/API/异常/安全 | `backend/common/` 下对应文件 |
+| **注释 / JavaDoc / 注解** | `backend/common/comments-annotations.mdc` |
+| 单体 / 微服务 | `backend/monolith/overview` 或 `backend/microservices/architecture` |
+| 中间件 | `middleware/…` |
+| 前端某栈 | `frontend/<实际栈>/…` |
+| **前端模块 / 多语言 i18n** | `frontend/i18n.mdc` |
+| docs 同步 | `workflow/docs-sync.mdc` |
+| 收尾 | `workflow/acceptance.mdc` |
+
+## 本地常驻服务（减噪，可选）
+
+- 后端/前端热重启前确认端口（如 8080 / 8081）是否被旧进程占用；占用则先结束再启。  
+- 细节以项目 `docs/dev-setup` 为准。
+
+## 禁止
+
+- 未出清单/模式就把前后端+多中间件一次做完且挂满规则。  
+- 只改运行副本不同步全集源。  
+- 修改时顺手大重构、扩大范围。  
+- 混用 monolith 与 microservices，或混用多套前端栈规则。  
+- 一次加载整包 reference。

@@ -31,6 +31,9 @@ public class BillCreateDTO {
     @NotNull(message = "账单日期不能为空")
     private LocalDate billDate;
 
+    /** 可选家庭成员 */
+    private Long memberId;
+
     @Size(max = 255, message = "备注最长 255 字符")
     private String remark;
 }

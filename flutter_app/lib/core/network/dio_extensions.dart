@@ -71,7 +71,7 @@ extension DioClientRequest on Dio {
     }
     return ApiResult(
       code: 500,
-      message: e.message ?? '网络连接失败',
+      message: '网络连接失败',
     );
   }
 }

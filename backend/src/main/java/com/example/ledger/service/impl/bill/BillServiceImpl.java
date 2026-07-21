@@ -10,10 +10,13 @@ import com.example.ledger.dto.bill.BillQueryDTO;
 import com.example.ledger.dto.bill.BillUpdateDTO;
 import com.example.ledger.entity.bill.Bill;
 import com.example.ledger.entity.category.Category;
+import com.example.ledger.entity.member.FamilyMember;
 import com.example.ledger.mapper.bill.BillMapper;
 import com.example.ledger.mapper.category.CategoryMapper;
+import com.example.ledger.mapper.member.FamilyMemberMapper;
 import com.example.ledger.service.bill.BillService;
 import com.example.ledger.service.category.CategoryService;
+import com.example.ledger.service.member.MemberService;
 import com.example.ledger.vo.bill.BillPageVO;
 import com.example.ledger.vo.bill.BillVO;
 import lombok.RequiredArgsConstructor;
@@ -53,7 +56,9 @@ public class BillServiceImpl implements BillService {
     private final BillMapper billMapper;
     private final CategoryMapper categoryMapper;
     private final CategoryService categoryService;
+    private final MemberService memberService;
     private final StatsCacheService statsCacheService;
+    private final FamilyMemberMapper familyMemberMapper;
 
     @Override
     public BillPageVO page(Long userId, BillQueryDTO query) {
@@ -65,9 +70,11 @@ public class BillServiceImpl implements BillService {
 
         Page<Bill> pageResult = billMapper.selectPage(new Page<>(page, size), wrapper);
         Map<Long, Category> categoryMap = loadCategoryMap(pageResult.getRecords());
+        Map<Long, String> memberNameMap = loadMemberNameMap(pageResult.getRecords());
 
         List<BillVO> records = pageResult.getRecords().stream()
-                .map(bill -> toVO(bill, categoryMap.get(bill.getCategoryId())))
+                .map(bill -> toVO(bill, categoryMap.get(bill.getCategoryId()),
+                        memberNameMap.get(bill.getMemberId())))
                 .toList();
 
         return BillPageVO.builder()
@@ -91,11 +98,12 @@ public class BillServiceImpl implements BillService {
         bill.setAmount(normalizeAmount(dto.getAmount()));
         bill.setBillDate(dto.getBillDate());
         bill.setRemark(dto.getRemark());
+        bill.setMemberId(resolveMemberId(userId, dto.getMemberId()));
         billMapper.insert(bill);
         bill = billMapper.selectById(bill.getId());
 
         statsCacheService.invalidateMonth(userId, bill.getBillDate());
-        return toVO(bill, category);
+        return toVO(bill, category, loadMemberName(bill.getMemberId()));
     }
 
     @Override
@@ -119,6 +127,10 @@ public class BillServiceImpl implements BillService {
         if (dto.getRemark() != null) {
             bill.setRemark(StringUtils.hasText(dto.getRemark()) ? dto.getRemark() : null);
         }
+        if (dto.getMemberId() != null) {
+            // 约定：传 0 或负数清空成员
+            bill.setMemberId(dto.getMemberId() <= 0 ? null : resolveMemberId(userId, dto.getMemberId()));
+        }
 
         Category category = categoryService.requireAccessible(userId, bill.getCategoryId());
         validateTypeMatch(category, bill.getType());
@@ -129,7 +141,7 @@ public class BillServiceImpl implements BillService {
         if (!oldDate.equals(bill.getBillDate())) {
             statsCacheService.invalidateMonth(userId, bill.getBillDate());
         }
-        return toVO(bill, category);
+        return toVO(bill, category, loadMemberName(bill.getMemberId()));
     }
 
     @Override
@@ -166,6 +178,10 @@ public class BillServiceImpl implements BillService {
         if (query.getEndDate() != null) {
             wrapper.le(Bill::getBillDate, query.getEndDate());
         }
+        if (StringUtils.hasText(query.getKeyword())) {
+            // 备注模糊搜索；仅匹配当前用户账单（上方已 eq userId）
+            wrapper.like(Bill::getRemark, query.getKeyword().trim());
+        }
         return wrapper;
     }
 
@@ -182,6 +198,35 @@ public class BillServiceImpl implements BillService {
                 .collect(Collectors.toMap(Category::getId, Function.identity()));
     }
 
+    private Map<Long, String> loadMemberNameMap(List<Bill> bills) {
+        List<Long> memberIds = bills.stream()
+                .map(Bill::getMemberId)
+                .filter(Objects::nonNull)
+                .distinct()
+                .toList();
+        if (memberIds.isEmpty()) {
+            return Map.of();
+        }
+        return familyMemberMapper.selectBatchIds(memberIds).stream()
+                .collect(Collectors.toMap(FamilyMember::getId, FamilyMember::getName));
+    }
+
+    private Long resolveMemberId(Long userId, Long memberId) {
+        if (memberId == null) {
+            return null;
+        }
+        memberService.requireOwned(userId, memberId);
+        return memberId;
+    }
+
+    private String loadMemberName(Long memberId) {
+        if (memberId == null) {
+            return null;
+        }
+        FamilyMember member = familyMemberMapper.selectById(memberId);
+        return member != null ? member.getName() : null;
+    }
+
     private void validateTypeMatch(Category category, Integer type) {
         if (!category.getType().equals(type)) {
             throw new BusinessException(ResultCode.BAD_REQUEST, "分类类型与账单类型不一致");
@@ -192,11 +237,13 @@ public class BillServiceImpl implements BillService {
         return amount.setScale(2, RoundingMode.HALF_UP);
     }
 
-    private BillVO toVO(Bill bill, Category category) {
+    private BillVO toVO(Bill bill, Category category, String memberName) {
         return BillVO.builder()
                 .id(bill.getId())
                 .categoryId(bill.getCategoryId())
                 .categoryName(category != null ? category.getName() : null)
+                .memberId(bill.getMemberId())
+                .memberName(memberName)
                 .type(bill.getType())
                 .amount(formatAmount(bill.getAmount()))
                 .billDate(bill.getBillDate())

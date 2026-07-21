@@ -36,10 +36,13 @@ flowchart LR
 |------|------------|------|
 | login | `controller.login` | 注册、登录、退出 |
 | user | `controller.user` | 当前用户信息 |
+| admin | `controller.admin` | 管理员账户列表 / 封禁解封（role=2） |
 | category | `controller.category` | 系统预设 + 用户自定义分类 |
 | bill | `controller.bill` | 账单 CRUD、分页筛选 |
 | stats | `controller.stats` | 本月收入/支出/结余（Redis 缓存） |
+| member | `controller.member` | 家庭成员 |
 
+用户字段：`status`（1 正常 / 0 禁用）、`role`（1 普通 / 2 管理员）。
 ## 认证流程
 
 1. 登录成功：签发 JWT（1 天）→ 写入 Redis `auth:token:{userId}`

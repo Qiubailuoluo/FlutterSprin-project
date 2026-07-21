@@ -2,7 +2,10 @@ package com.example.ledger.common.exception;
 
 import com.example.ledger.common.result.Result;
 import com.example.ledger.common.result.ResultCode;
+import com.example.ledger.common.util.ErrorIds;
+import com.example.ledger.common.web.RequestIdFilter;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.MDC;
 import org.springframework.validation.BindException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -21,7 +24,7 @@ import org.springframework.web.servlet.resource.NoResourceFoundException;
  *   <li>{@link BusinessException} — 业务错误，如用户名重复、无权限</li>
  *   <li>参数校验异常 — {@code @Valid} 校验失败时触发</li>
  *   <li>{@link NoResourceFoundException} — 静态资源不存在（如 favicon）</li>
- *   <li>{@link Exception} — 兜底，记录日志并返回 500</li>
+ *   <li>{@link Exception} — 兜底，记录日志并返回 500 + errorId</li>
  * </ol>
  *
  * @see docs/learn/03-global-exception.md
@@ -33,6 +36,8 @@ public class GlobalExceptionHandler {
     /** 业务异常：Service 中 throw new BusinessException(...) */
     @ExceptionHandler(BusinessException.class)
     public Result<Void> handleBusinessException(BusinessException e) {
+        log.warn("业务异常 code={} msg={} requestId={}",
+                e.getCode(), e.getMessage(), currentRequestId());
         return Result.fail(e.getCode(), e.getMessage());
     }
 
@@ -54,16 +59,27 @@ public class GlobalExceptionHandler {
     /** 浏览器访问根路径时会自动请求 favicon.ico，没有该文件时不应打 500 日志 */
     @ExceptionHandler(NoResourceFoundException.class)
     public Result<Void> handleNoResourceFound(NoResourceFoundException e) {
-        if (e.getMessage() != null && e.getMessage().contains("favicon.ico")) {
-            return Result.fail(ResultCode.NOT_FOUND);
-        }
-        return Result.fail(ResultCode.NOT_FOUND, e.getMessage());
+        return Result.fail(ResultCode.NOT_FOUND);
     }
 
-    /** 未预料的异常：记录完整堆栈，对外只返回「服务器错误」 */
+    /**
+     * 未预料的异常：记录完整堆栈，对外只返回固定文案 + errorId（= requestId）。
+     */
     @ExceptionHandler(Exception.class)
     public Result<Void> handleException(Exception e) {
-        log.error("未处理异常", e);
-        return Result.fail(ResultCode.INTERNAL_ERROR);
+        String errorId = currentRequestId();
+        if (errorId == null || errorId.isBlank()) {
+            errorId = ErrorIds.newId();
+        }
+        log.error("未处理异常 errorId={}", errorId, e);
+        return Result.fail(
+                ResultCode.INTERNAL_ERROR,
+                ResultCode.INTERNAL_ERROR.getMessage(),
+                errorId
+        );
+    }
+
+    private static String currentRequestId() {
+        return MDC.get(RequestIdFilter.MDC_REQUEST_ID);
     }
 }

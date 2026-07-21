@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:dio/dio.dart';
 import 'package:ledger/core/constants/api_constants.dart';
 import 'package:ledger/core/model/api_result.dart';
@@ -31,6 +33,8 @@ class DioClient {
           if (token != null && token.isNotEmpty) {
             options.headers['Authorization'] = 'Bearer $token';
           }
+          // 与后端 RequestIdFilter 对齐，便于联调与 500 关联
+          options.headers.putIfAbsent('X-Request-Id', _newRequestId);
           handler.next(options);
         },
         onResponse: (response, handler) {
@@ -53,6 +57,13 @@ class DioClient {
   final TokenStorage _tokenStorage;
   final UnauthorizedCallback? _onUnauthorized;
   late final Dio _dio;
+
+  static final _random = Random.secure();
+
+  static String _newRequestId() {
+    final bytes = List<int>.generate(4, (_) => _random.nextInt(256));
+    return bytes.map((b) => b.toRadixString(16).padLeft(2, '0')).join();
+  }
 
   void _maybeHandleUnauthorized(dynamic data) {
     if (data is Map && data['code'] == 401) {

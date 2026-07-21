@@ -16,6 +16,8 @@ public class BillVO {
     private Long id;
     private Long categoryId;
     private String categoryName;
+    private Long memberId;
+    private String memberName;
     /** 1 收入，2 支出 */
     private Integer type;
     /** 金额字符串，保留两位小数 */

@@ -19,9 +19,11 @@
 | 400 | 参数错误 |
 | 401 | 未登录或 Token 无效 |
 | 403 | 无权限 |
-| 500 | 服务器错误 |
+| 404 | 资源不存在 |
+| 500 | 服务器错误（另含 `errorId`，无堆栈；用编号在服务端日志排查） |
 
-JWT 有效期：**1 天**。Token 同时存入 Redis：`auth:token:{userId}`。
+JWT 有效期：**1 天**。Token 同时存入 Redis：`auth:token:{userId}`。  
+请求可带 `X-Request-Id`；响应回写同一编号（未传则服务端生成）。
 
 ---
 
@@ -78,13 +80,15 @@ JWT 有效期：**1 天**。Token 同时存入 Redis：`auth:token:{userId}`。
   "expiresIn": 86400,
   "userId": 1,
   "username": "demo",
-  "nickname": "演示用户"
+  "nickname": "演示用户",
+  "role": 1
 }
 ```
 
 | 字段 | 说明 |
 |------|------|
 | expiresIn | 秒，86400 = 1 天 |
+| role | `1` 普通用户，`2` 管理员 |
 
 ---
 
@@ -107,6 +111,60 @@ JWT 有效期：**1 天**。Token 同时存入 Redis：`auth:token:{userId}`。
   "userId": 1,
   "username": "demo",
   "nickname": "演示用户",
+  "status": 1,
+  "role": 1,
   "createdAt": "2026-07-02T10:00:00"
 }
 ```
+
+| 字段 | 说明 |
+|------|------|
+| status | `1` 正常，`0` 禁用 |
+| role | `1` 普通，`2` 管理员 |
+
+---
+
+## PUT /api/user/profile
+
+更新当前用户昵称（需登录）。
+
+**请求体**
+
+```json
+{ "nickname": "新昵称" }
+```
+
+| 字段 | 类型 | 必填 | 说明 |
+|------|------|------|------|
+| nickname | string | 是 | 1~64 字符 |
+
+**响应 data**：同 `GET /api/user/profile`。
+
+---
+
+## PUT /api/user/password
+
+修改当前用户密码（需登录）。须校验旧密码；成功后删除 Redis Token，**需重新登录**。
+
+**请求体**
+
+```json
+{
+  "oldPassword": "123456",
+  "newPassword": "654321"
+}
+```
+
+| 字段 | 类型 | 必填 | 说明 |
+|------|------|------|------|
+| oldPassword | string | 是 | 6~32 字符 |
+| newPassword | string | 是 | 6~32 字符，且不能与旧密码相同 |
+
+**失败示例**
+
+| 情况 | code | message |
+|------|------|---------|
+| 旧密码错误 | 400 | 旧密码不正确 |
+| 新旧相同 | 400 | 新密码不能与旧密码相同 |
+
+**响应 data**：`null`

@@ -165,6 +165,7 @@ class _BillListPageState extends State<BillListPage> {
                             columns: const [
                               DataColumn(label: Text('日期')),
                               DataColumn(label: Text('分类')),
+                              DataColumn(label: Text('成员')),
                               DataColumn(label: Text('类型')),
                               DataColumn(label: Text('金额')),
                               DataColumn(label: Text('备注')),
@@ -197,6 +198,7 @@ class _BillListPageState extends State<BillListPage> {
       cells: [
         DataCell(Text(bill.billDate)),
         DataCell(Text(bill.categoryName)),
+        DataCell(Text(bill.memberName ?? '-')),
         DataCell(
           Chip(
             label: Text(bill.typeLabel),

@@ -26,6 +26,9 @@ public class BillUpdateDTO {
 
     private LocalDate billDate;
 
+    /** 传 null 可清空成员；不传字段则保持原值（由 Service 用显式标记处理较复杂，此处约定：传 0 清空） */
+    private Long memberId;
+
     @Size(max = 255, message = "备注最长 255 字符")
     private String remark;
 }

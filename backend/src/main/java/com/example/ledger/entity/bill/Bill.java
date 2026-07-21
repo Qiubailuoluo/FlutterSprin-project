@@ -23,6 +23,9 @@ public class Bill {
 
     private Long categoryId;
 
+    /** 家庭成员，可空 */
+    private Long memberId;
+
     /** 1 收入，2 支出 */
     private Integer type;
 

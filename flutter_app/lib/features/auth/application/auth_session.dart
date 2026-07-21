@@ -24,6 +24,9 @@ class AuthSession extends ChangeNotifier {
   /// 是否已登录（Token 存在且已恢复用户信息）。
   bool get isLoggedIn => _user != null;
 
+  /// 是否管理员（role = 2）。
+  bool get isAdmin => _user?.isAdmin == true;
+
   /// 应用启动时从本地 Token 恢复会话，并校验 profile 接口。
   Future<void> restoreSession() async {
     final token = await _tokenStorage.getToken();
@@ -54,6 +57,7 @@ class AuthSession extends ChangeNotifier {
       userId: data.userId,
       username: data.username,
       nickname: data.nickname,
+      role: data.role,
     );
     notifyListeners();
     return null;
@@ -90,5 +94,32 @@ class AuthSession extends ChangeNotifier {
     await _tokenStorage.clearToken();
     _user = null;
     notifyListeners();
+  }
+
+  /// 更新昵称并刷新内存中的用户信息。
+  Future<String?> updateNickname(String nickname) async {
+    final result = await _authApi.updateNickname(nickname: nickname);
+    if (!result.isSuccess || result.data == null) {
+      return result.displayMessage;
+    }
+    _user = result.data;
+    notifyListeners();
+    return null;
+  }
+
+  /// 修改密码；成功后清除本地登录态（后端已踢 Token）。
+  Future<String?> updatePassword({
+    required String oldPassword,
+    required String newPassword,
+  }) async {
+    final result = await _authApi.updatePassword(
+      oldPassword: oldPassword,
+      newPassword: newPassword,
+    );
+    if (!result.isSuccess) {
+      return result.displayMessage;
+    }
+    await forceLogout();
+    return null;
   }
 }

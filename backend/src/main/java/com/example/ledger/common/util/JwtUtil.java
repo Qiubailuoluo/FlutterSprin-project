@@ -1,5 +1,6 @@
 package com.example.ledger.common.util;
 
+import com.example.ledger.common.security.UserRoles;
 import com.example.ledger.config.JwtProperties;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -37,14 +38,15 @@ public class JwtUtil {
     }
 
     /**
-     * 签发 Token。Payload 中的 sub=userId，自定义 claim 存 username。
+     * 签发 Token。Payload 中的 sub=userId，自定义 claim 存 username、role。
      */
-    public String generateToken(Long userId, String username) {
+    public String generateToken(Long userId, String username, Integer role) {
         Date now = new Date();
         Date expiry = new Date(now.getTime() + jwtProperties.getExpirationMs());
         return Jwts.builder()
                 .subject(String.valueOf(userId))
                 .claim("username", username)
+                .claim("role", role == null ? UserRoles.USER : role)
                 .issuedAt(now)
                 .expiration(expiry)
                 .signWith(secretKey)

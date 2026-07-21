@@ -1,0 +1,41 @@
+---
+description: 【参考/二开补充】Flutter 目录分层与职责；冲突时以本地 lib 结构为准
+globs:
+alwaysApply: false
+---
+
+# Flutter 结构（参考）
+
+> **优先级**：本地 `lib/` 与项目 rules > 本文件。勿与 Vue/Web 规则混用。
+
+## 推荐目录
+
+```text
+lib/
+  app/          入口、路由、主题
+  core/         网络、存储、常量、统一结果解析
+  features/{x}/
+    data/         API、Model
+    presentation/ 页面、Widget
+```
+
+也可其他清晰分层；**二开对齐现有仓库，不混用两套**。
+
+## 职责
+
+| 层 | 做 | 不做 |
+|----|----|------|
+| presentation | UI、状态展示、交互 | 拼完整 URL、解析原始 JSON 当业务真相 |
+| data | 请求、Model、序列化 | 弹 Toast、改全局路由（除非项目约定） |
+| core | Dio/拦截器、Token、错误映射 | 具体业务页面逻辑 |
+
+## 状态与 Widget
+
+- 页面状态放在明确的状态管理方案中（跟项目：Provider / Riverpod / Bloc 等），不在深层 Widget 里散落 `setState` 堆业务。  
+- 可复用 UI 抽到 `presentation/widgets` 或 `core` 下共享组件；业务强绑定的留在 feature 内。
+
+## AI 行为
+
+- 新功能先落对 feature 目录，再写 UI。  
+- 不把业务 API 写进 Widget `build`。  
+- 不引入与项目不一致的第二套状态管理。

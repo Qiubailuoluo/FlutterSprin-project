@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:ledger/core/di/app_services.dart';
+import 'package:ledger/core/l10n/app_locale.dart';
+import 'package:ledger/core/l10n/app_strings.dart';
 import 'package:ledger/core/widgets/async_state_view.dart';
 import 'package:ledger/core/widgets/page_header.dart';
 import 'package:ledger/features/home/presentation/widgets/stats_card.dart';
@@ -16,6 +18,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   final StatsApi _statsApi = AppServices.instance.statsApi;
+  final AppLocaleController _locale = AppServices.instance.locale;
 
   MonthStats? _stats;
   bool _loading = true;
@@ -24,7 +27,18 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
+    _locale.addListener(_onLocaleChanged);
     _loadStats();
+  }
+
+  @override
+  void dispose() {
+    _locale.removeListener(_onLocaleChanged);
+    super.dispose();
+  }
+
+  void _onLocaleChanged() {
+    if (mounted) setState(() {});
   }
 
   Future<void> _loadStats() async {
@@ -41,7 +55,9 @@ class _HomePageState extends State<HomePage> {
       if (result.isSuccess && result.data != null) {
         _stats = result.data;
       } else {
-        _error = result.message.isNotEmpty ? result.message : '加载统计失败';
+        _error = result.message.isNotEmpty
+            ? result.message
+            : AppStrings.t(_locale.language, 'home.loadFailed');
       }
     });
   }
@@ -54,13 +70,14 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    final lang = _locale.language;
     return Padding(
       padding: const EdgeInsets.all(24),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           PageHeader(
-            title: '本月概览',
+            title: AppStrings.t(lang, 'home.overview'),
             actions: [
               if (_stats != null)
                 Padding(
@@ -72,8 +89,24 @@ class _HomePageState extends State<HomePage> {
                         ),
                   ),
                 ),
+              PopupMenuButton<AppLanguage>(
+                tooltip: AppStrings.t(lang, 'home.language'),
+                initialValue: lang,
+                onSelected: _locale.setLanguage,
+                itemBuilder: (context) => [
+                  for (final value in AppLanguage.values)
+                    PopupMenuItem(
+                      value: value,
+                      child: Text(AppStrings.t(lang, 'lang.${value.name}')),
+                    ),
+                ],
+                child: const Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 8),
+                  child: Icon(Icons.language),
+                ),
+              ),
               IconButton(
-                tooltip: '刷新',
+                tooltip: AppStrings.t(lang, 'home.refresh'),
                 onPressed: _loading ? null : _loadStats,
                 icon: _loading
                     ? const SizedBox(
@@ -109,8 +142,10 @@ class _HomePageState extends State<HomePage> {
                                   const SizedBox(width: 12),
                                   Expanded(
                                     child: Text(
-                                      '本月还没有账单，去「账单」页记一笔吧',
-                                      style: TextStyle(color: Colors.grey.shade700),
+                                      AppStrings.t(lang, 'home.emptyHint'),
+                                      style: TextStyle(
+                                        color: Colors.grey.shade700,
+                                      ),
                                     ),
                                   ),
                                 ],
@@ -118,7 +153,7 @@ class _HomePageState extends State<HomePage> {
                             ),
                           ),
                         if (_isAllZero(_stats!)) const SizedBox(height: 16),
-                        _StatsCards(stats: _stats!),
+                        _StatsCards(stats: _stats!, language: lang),
                       ],
                     ),
             ),
@@ -130,27 +165,28 @@ class _HomePageState extends State<HomePage> {
 }
 
 class _StatsCards extends StatelessWidget {
-  const _StatsCards({required this.stats});
+  const _StatsCards({required this.stats, required this.language});
 
   final MonthStats stats;
+  final AppLanguage language;
 
   @override
   Widget build(BuildContext context) {
     final cards = [
       StatsCard(
-        title: '收入',
+        title: AppStrings.t(language, 'home.income'),
         amount: stats.income,
         icon: Icons.arrow_downward,
         color: Colors.green.shade600,
       ),
       StatsCard(
-        title: '支出',
+        title: AppStrings.t(language, 'home.expense'),
         amount: stats.expense,
         icon: Icons.arrow_upward,
         color: Colors.orange.shade700,
       ),
       StatsCard(
-        title: '结余',
+        title: AppStrings.t(language, 'home.balance'),
         amount: stats.balance,
         icon: Icons.account_balance_wallet_outlined,
       ),

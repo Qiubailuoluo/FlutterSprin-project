@@ -59,4 +59,28 @@ class AuthApi {
       fromJsonT: (json) => UserProfile.fromJson(json as Map<String, dynamic>),
     );
   }
+
+  /// PUT /api/user/profile
+  Future<ApiResult<UserProfile>> updateNickname({required String nickname}) {
+    return _client.put(
+      ApiConstants.profilePath,
+      data: {'nickname': nickname},
+      fromJsonT: (json) => UserProfile.fromJson(json as Map<String, dynamic>),
+    );
+  }
+
+  /// PUT /api/user/password（成功后 Token 失效）
+  Future<ApiResult<Object?>> updatePassword({
+    required String oldPassword,
+    required String newPassword,
+  }) {
+    return _client.put(
+      ApiConstants.passwordPath,
+      data: {
+        'oldPassword': oldPassword,
+        'newPassword': newPassword,
+      },
+      fromJsonT: (_) => null,
+    );
+  }
 }

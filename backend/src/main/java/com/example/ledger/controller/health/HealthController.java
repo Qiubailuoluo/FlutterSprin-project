@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.Instant;
 import java.util.Map;
 
 /**
@@ -18,7 +19,9 @@ public class HealthController {
     public Result<Map<String, String>> health() {
         return Result.ok(Map.of(
                 "status", "UP",
-                "app", "ledger"
+                "app", "ledger",
+                // 练习 reference 协议：最小改动增加可观测字段，便于确认响应契约
+                "time", Instant.now().toString()
         ));
     }
 }

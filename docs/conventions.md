@@ -28,6 +28,13 @@ vo/{模块}/           → 出参
 - 不编写或拼接 SQL
 - 不直接注入 Mapper、RedisTemplate
 - 不 try-catch 后静默返回
+- 不把异常堆栈 / `e.getMessage()` 原样塞进 `Result` 返回给前端（见全局异常与 `errorId`）
+
+### 统一响应与异常
+
+- 成功/失败均用 `Result`：`code` + `message` + `data`
+- 未知异常：固定 500 文案 + `errorId`（关联日志 `[req=…]`），响应不含堆栈
+- 详情：`docs/learn/03-global-exception.md`
 
 ### 示例（正确）
 
@@ -50,6 +57,7 @@ public Result<Long> create(@Valid @RequestBody BillCreateDTO dto) {
 
 - Widget 内硬编码 API URL
 - 在 UI 层直接解析原始 JSON（应经 Model + ApiResult）
+- 把后端堆栈 / Dio 原始错误直接 Toast；500 用 `ApiResult.displayMessage`（含 errorId）
 
 ## 文档同步
 

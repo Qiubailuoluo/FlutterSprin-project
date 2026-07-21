@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:ledger/core/model/api_result.dart';
 
 /// 全局 SnackBar 反馈，统一成功/错误/提示样式。
 ///
@@ -14,6 +15,11 @@ class AppMessenger {
 
   static void showError(String message) {
     _show(message, backgroundColor: const Color(0xFFFF4D4F));
+  }
+
+  /// 按 [ApiResult.displayMessage] 展示错误（500 带编号，业务用 message）。
+  static void showApiError(ApiResult<dynamic> result) {
+    showError(result.displayMessage);
   }
 
   static void showInfo(String message) {

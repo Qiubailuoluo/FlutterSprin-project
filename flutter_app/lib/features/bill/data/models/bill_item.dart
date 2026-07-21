@@ -3,6 +3,8 @@ class BillItem {
   final int id;
   final int categoryId;
   final String categoryName;
+  final int? memberId;
+  final String? memberName;
 
   /// 1 = 收入，2 = 支出
   final int type;
@@ -17,6 +19,8 @@ class BillItem {
     required this.id,
     required this.categoryId,
     required this.categoryName,
+    this.memberId,
+    this.memberName,
     required this.type,
     required this.amount,
     required this.billDate,
@@ -31,6 +35,8 @@ class BillItem {
       id: (json['id'] as num).toInt(),
       categoryId: (json['categoryId'] as num).toInt(),
       categoryName: json['categoryName'] as String? ?? '',
+      memberId: (json['memberId'] as num?)?.toInt(),
+      memberName: json['memberName'] as String?,
       type: (json['type'] as num).toInt(),
       amount: json['amount']?.toString() ?? '0.00',
       billDate: json['billDate']?.toString() ?? '',
