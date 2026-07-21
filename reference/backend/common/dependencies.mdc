@@ -1,0 +1,53 @@
+---
+description: 【参考/二开补充】后端分层依赖方向、注入与模块边界；版本以目标项目 pom 为准
+globs:
+alwaysApply: false
+---
+
+# 依赖与模块边界（参考）
+
+> **优先级**：本地包结构、现有注入方式、`pom.xml`/`build.gradle` > 本文件。  
+> **不写死**具体依赖版本号；新增库先对齐项目已有技术栈。
+
+## 分层依赖方向
+
+```text
+controller  →  service  →  mapper / 外部客户端封装
+                ↓
+             common（Result、异常、常量、纯工具）
+```
+
+- 允许：上层依赖下层；`service` 依赖 `common`、Mapper、项目内 client 封装。  
+- 禁止：`mapper` → `service`；`common` → 业务 `service`；`controller` ↔ `controller` 互调。  
+- `config` 创建 Bean，不承载业务流程。
+
+## 注入习惯
+
+- 构造器注入优先（或项目统一的 `@RequiredArgsConstructor`）；避免字段 `@Autowired` 若项目已禁止。  
+- 业务依赖注入接口（`XxxService`），不直接依赖 `XxxServiceImpl`。  
+- 一个类依赖过多（如 >5～7 个业务协作方）时考虑拆分职责，而非继续堆注入。
+
+## 循环依赖
+
+- 出现 A↔B：优先拆第三模块、抽共享组件、或合并不当拆分。  
+- `@Lazy` 仅作权宜且需注释原因；参考规范不鼓励作为默认解法。
+
+## Maven / 依赖库
+
+- 新增 starter/库：确认项目未已提供同等能力；版本跟 Spring Boot BOM / 父 POM，不手写冲突版本。  
+- 工具库（JSON、Excel、地图等）放清用途；禁止为小事引入重型框架。  
+- 密钥、URL、数据源只走配置，不进代码常量（示例值除外）。
+
+## common 边界
+
+| 适合放 common | 不适合放 common |
+|---------------|-----------------|
+| Result、错误码、业务异常基类 | 某业务 Service 实现 |
+| 与业务无关的日期/校验工具 | 依赖多个业务模块的「万能 Util」 |
+| 基础注解、上下文 Holder（若项目已有） | 直接操作具体表的代码 |
+
+## AI 行为（参考）
+
+- 加依赖前先读 `pom.xml`（或等价文件），说明为何需要。  
+- 新建类时声明它依赖哪些层；若破坏方向，先调整设计。  
+- 不引入与现有栈重复的 ORM/HTTP 客户端「第二套」。

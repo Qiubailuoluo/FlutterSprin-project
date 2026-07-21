@@ -1,0 +1,66 @@
+---
+description: 【参考/二开补充】Spring Boot 新模块/新接口的文件创建清单与命名；冲突时以本地包结构为准
+globs:
+alwaysApply: false
+---
+
+# 文件创建与脚手架（参考）
+
+> **优先级**：本地包结构 / 项目 rules、docs > 本文件。  
+> 包名、模块名以目标项目为准；下表为常见「先分层、再模块」模板。
+
+## 包路径模板
+
+```text
+{rootPackage}/
+  controller/{module}/     XxxController
+  service/{module}/        XxxService          （接口）
+  service/impl/{module}/   XxxServiceImpl
+  mapper/{module}/         XxxMapper
+  entity/{module}/         Xxx                 （或 XxxEntity，跟项目）
+  dto/{module}/            XxxCreateDTO / XxxUpdateDTO / XxxQueryDTO
+  vo/{module}/             XxxVO / XxxDetailVO
+  common/                  Result、异常、常量（已有则复用，勿重复造）
+  config/                  安全、序列化等配置（已有则扩展）
+```
+
+也可「先模块再分层」（`{module}/controller`…）；**二开必须跟仓库现有风格，不要混用两套**。
+
+## 命名约定（默认）
+
+| 类型 | 模式 | 示例 |
+|------|------|------|
+| Controller | `{资源}Controller` | `BillController` |
+| Service | `{资源}Service` / `...Impl` | `BillService` |
+| Mapper | `{资源}Mapper` | `BillMapper` |
+| 入参 | `{动作或资源}{Create\|Update\|Query}DTO` | `BillCreateDTO` |
+| 出参 | `{资源}VO` | `BillVO` |
+
+类名与 URL 资源名语义一致；避免 `Manager`/`Helper` 泛滥而无边界。
+
+## 新业务接口 Checklist
+
+新增一个写操作接口时，通常需要（按项目裁剪）：
+
+1. [ ] 确认模块目录是否已存在，没有则按现有风格建包  
+2. [ ] DTO（校验注解）+ 如需则 VO  
+3. [ ] Service 方法签名与实现（事务边界在 Service）  
+4. [ ] Mapper 方法或 MP 内置调用；复杂 SQL 才加 XML  
+5. [ ] Controller：路径、动词、`@Valid`、返回统一 `Result`  
+6. [ ] 权限：走现有 Filter/Interceptor/Security，不在 Controller 复制鉴权逻辑（取当前用户用项目工具）  
+7. [ ] 若有缓存：在 Service 写清失效；Key 跟项目约定  
+8. [ ] 同步 API/表结构文档（若项目要求 docs 同提交）
+
+只读查询可省略 UpdateDTO、写缓存失效等项，但仍保持 Controller 薄、Service 承载业务。
+
+## 不要做的事
+
+- 在错误的层建类（如把业务放进 `config`、把 SQL 放进 Controller）。  
+- 为一次性逻辑新建空洞的 `Util`/`Manager` 却无明确职责。  
+- 复制整份旧模块后只改类名却残留错误路径/权限。
+
+## AI 行为（参考）
+
+- 创建前先搜索同模块已有类，复用命名与目录。  
+- 一次给出「将创建的文件列表」，再写代码；缺 Entity/表时先问或先读 schema。  
+- 不擅自引入与项目不一致的包布局。

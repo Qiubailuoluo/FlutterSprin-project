@@ -1,0 +1,70 @@
+---
+description: 【参考/二开补充】reference 高效用法协议：裁剪、任务拆解、按任务选用、强制收尾
+globs:
+alwaysApply: false
+---
+
+# reference 高效用法协议（参考）
+
+> 本包是**使用中的补充词典**。仅解压**不会**自动高效；**按本协议选用**才有用。  
+> **优先级**：本地代码与项目专用 rules/docs > 本包专题文件。  
+> 本包默认 Manual，**不会**自动覆盖项目正式 rules；只有被 `@` 或主动阅读时才进入对话。
+
+## 目录怎么保证高效
+
+- 后端：`common` +（`monolith` **或** `microservices`）  
+- 前端：只留实际栈  
+- 工作流：`workflow/`（拆解、docs、验收）  
+- 每**子任务**只选 **1～3 个**专题 `.mdc`（另可加本协议 / task-breakdown）
+
+「只挂 1～3 个」= `@` 的 **reference 规则文件**个数，不是 globs 匹配的业务文件数。
+
+## 未使用内容：删除或忽略
+
+| 情况 | 做法 |
+|------|------|
+| 单体 | 留 `backend/common` + `monolith`；删/忽略 `microservices` |
+| 微服务 | 留 `common` + `microservices`；删/忽略 `monolith` |
+| 用 Vue | 删/忽略 `frontend/flutter` 等 |
+| 不用某中间件 | 删/忽略对应 middleware 文件 |
+
+## AI 必须遵守的工作流
+
+1. **开场**：读本文件；确认单体/微服务、前端栈。  
+2. **裁剪**：删或忽略未用目录。  
+3. **拆解**：需求跨多层/多模块 → 先读并按 `workflow/task-breakdown.mdc` 列出子任务，再做当前块。  
+4. **改代码**：二开或修改已有实现 → 遵守 `workflow/code-change.mdc`（先读后改、最小改动）。  
+5. **选件**：当前子任务只选 **1～3 个**技术专题 `.mdc`（`code-change` / 本协议可不计在「专题」名额内，或与专题合计仍保持精简）。  
+6. **二开**：先搜本地与专用 rules；冲突以本地为准。  
+7. **文档**：接口/表/无 docs → `workflow/docs-sync.mdc`。  
+8. **收尾**：`workflow/acceptance.mdc` + docs 校对。
+
+## 人侧分发
+
+1. 解压到 `.cursor/rules/reference/`。  
+2. 按架构与前端栈裁剪。  
+3. 保持 Manual；禁止整包 Always。  
+4. 先 `@` 本文件，声明技术栈；大需求同时 `@` `workflow/task-breakdown.mdc`。
+
+## 按任务选用（检索表）
+
+路径相对 `reference/`。
+
+| 正在做的事 | 建议引用 |
+|------------|----------|
+| 本协议 | `project-bootstrap.mdc` |
+| 大需求拆解 | `workflow/task-breakdown.mdc` |
+| **修改已有代码 / 二开** | `workflow/code-change.mdc` |
+| 分层/建类/API/异常/安全 | `backend/common/` 下对应文件 |
+| 单体 / 微服务 | `backend/monolith/overview` 或 `backend/microservices/architecture` |
+| 中间件 | `middleware/…` |
+| 前端某栈 | `frontend/<实际栈>/…` |
+| docs 同步 | `workflow/docs-sync.mdc` |
+| 收尾 | `workflow/acceptance.mdc` |
+
+## 禁止
+
+- 未拆解就把前后端+多中间件一次做完且挂满规则。  
+- 修改时顺手大重构、扩大范围。  
+- 混用 monolith 与 microservices，或混用多套前端栈规则。  
+- 一次加载整包 reference。

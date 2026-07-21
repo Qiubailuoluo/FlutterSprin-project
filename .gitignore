@@ -13,3 +13,8 @@ flutter_app/.flutter-plugins-dependencies
 # OS
 Thumbs.db
 .DS_Store
+
+# 本地压缩包（分发用，源在 reference/）
+*.rar
+*.zip
+!docs/**/*.zip

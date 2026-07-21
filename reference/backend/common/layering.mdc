@@ -1,0 +1,49 @@
+---
+description: 【参考/二开补充】Spring Boot 分层职责、解耦与复用；冲突时以本地代码与项目规则为准
+globs:
+alwaysApply: false
+---
+
+# 分层与解耦（参考）
+
+> **优先级**：本地代码 / 项目 rules、docs > 本文件。
+
+## 推荐分层
+
+| 层 | 职责 | 允许 | 禁止 |
+|----|------|------|------|
+| Controller | HTTP 适配 | 接参、`@Valid`、调 Service、返回统一响应 | 业务 if/else、SQL、直接 Mapper/Redis、吞异常 |
+| Service（接口 + Impl） | 业务与事务 | 编排、校验业务规则、调 Mapper/缓存/外部客户端 | 依赖 HttpServletRequest、拼 HTTP 细节、把 Entity 直接当对外契约（除非项目已如此） |
+| Mapper / Repository | 持久化 | 查询与写入 | 业务判断、发消息、调其他 Service |
+| common | 跨模块复用 | Result、异常、常量、纯工具 | 依赖具体业务 Service |
+
+依赖方向：**只向下**（Controller → Service → Mapper）。禁止 Mapper 回调 Service、禁止 Controller 互调。
+
+## DTO / VO / Entity
+
+- **DTO**：入参（创建/更新/查询条件），带校验注解。  
+- **VO**：出参，只暴露前端需要的字段。  
+- **Entity**：表映射；默认不作为 API 响应体。  
+- 转换放在 Service（或项目已有的 Assembler/Converter），Controller 保持薄。
+
+## 解耦原则
+
+- 按**业务能力**拆 Service，不要一个「上帝 Service」。  
+- 跨模块复用：优先抽到 `common` 的无状态工具，或独立领域 Service；避免复制粘贴大段业务。  
+- 缓存、对象存储等通过项目封装调用，Controller/零散工具类不要直接 new 客户端。  
+- 能用接口注入则面向接口（`XxxService`），便于测试与替换实现。
+
+## 何时抽方法 vs 新类
+
+| 情况 | 建议 |
+|------|------|
+| 仅本 Service 内重复 2～3 次 | 私有方法 |
+| 多 Service 共用且无业务状态 | `common` 工具或小型 Helper |
+| 独立业务能力（如「算月统计」） | 独立 Service，由编排方调用 |
+| 仅数据访问差异 | 留在 Mapper/XML，不抬到 Service 玩 SQL 字符串 |
+
+## AI 行为（参考）
+
+- 改接口前先看清现有分层与包结构，对齐再增类。  
+- 禁止在 Controller 写业务或直接注入 Mapper。  
+- 新增跨层调用时说明依赖方向；发现循环依赖先拆，不硬补 `@Lazy` 糊弄（除非项目已有且文档说明）。

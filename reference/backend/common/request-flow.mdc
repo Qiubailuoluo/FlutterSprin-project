@@ -1,0 +1,56 @@
+---
+description: 【参考/二开补充】HTTP 请求进入后端到返回前端的链路；冲突时以本地 Filter/Security 为准
+globs:
+alwaysApply: false
+---
+
+# 请求链路（参考）
+
+> **优先级**：本地 Filter / Security / Interceptor 实现 > 本文件。
+
+## 标准路径
+
+```text
+Client
+  → Filter / Security / Interceptor（鉴权、CORS、日志 TraceId 等）
+  → Controller（接参、@Valid、取当前用户、调 Service）
+  → Service（业务、事务、缓存）
+  → Mapper / Redis / 外部 HTTP
+  → Service 组装 VO
+  → Controller 包装统一 Result
+  → Client
+```
+
+异常不走「成功返回」路径：在任意层抛出后，由 `@RestControllerAdvice` 转为统一错误体（见 `exception.mdc`）。
+
+## 各段职责
+
+| 段 | 做什么 | 不做什么 |
+|----|--------|----------|
+| 网关/Filter/Security | 鉴权、匿名白名单、写入用户上下文（ThreadLocal / SecurityContext） | 业务规则、落库 |
+| Controller | HTTP 映射、校验、调 Service、返回 Result | 开事务、写 SQL、直接 Redis |
+| Service | 业务真相；需要时 `@Transactional` | 解析 Token、读 Cookie（应已由上游放入上下文） |
+| 基础设施 | 数据与缓存访问 | 决定「是否允许该用户做某事」的业务策略（归属校验可在 Service） |
+
+## 鉴权与用户上下文
+
+- 登录态校验放在统一入口（Filter/Interceptor/Security），Controller 只取「当前用户 ID」。  
+- 取不到用户且接口需登录：返回未授权（由统一入口或 Service 抛业务异常，跟项目一致）。  
+- 资源归属（是否本人数据）在 **Service** 校验，不在 Mapper「碰巧查到就返回」。
+
+## 成功响应
+
+- 业务成功：Controller 返回项目统一结构（如 `{ code, message, data }`）。  
+- `data` 用 VO/基本类型；避免把 Entity、持久化代理对象直接序列化出敏感字段。
+
+## 与前端的衔接（原则）
+
+- 前端只依赖文档化的 URL、方法、请求体、响应 `code/data`。  
+- 错误用 `code` + `message` 表达；少用未约定的 HTTP 状态语义分叉（若项目已用 HTTP 状态码，对齐项目）。  
+- 分页、日期格式、金额精度跟 API 约定一致（见 `api-design.mdc`）。
+
+## AI 行为（参考）
+
+- 画链路或写接口时标明：鉴权在哪一层、用户 ID 从哪取、事务从哪开始。  
+- 不在 Controller 重复解析 JWT/Token。  
+- 新增拦截逻辑优先扩展现有 Filter/Security，不复制一套并行鉴权。

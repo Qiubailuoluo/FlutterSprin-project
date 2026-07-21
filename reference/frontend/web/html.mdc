@@ -1,0 +1,26 @@
+---
+description: 【参考/二开补充】HTML 语义与结构；仅原生 Web，勿与 Vue/Flutter 混用
+globs:
+alwaysApply: false
+---
+
+# HTML（参考）
+
+> **优先级**：本地模板与项目约定 > 本文件。
+
+## 原则
+
+- 用语义标签：`header` / `main` / `nav` / `footer` / `section` / `button` 等，避免无意义多层 `div`。  
+- 图片必须有有意义的 `alt`（装饰图可空 alt）。  
+- 表单：`label` 关联控件；按钮写清 `type`。  
+- 脚本：优先 `defer`；结构与行为分离（JS 不进大段内联，除非项目特例）。
+
+## 禁止
+
+- 用 `div`+点击冒充按钮却无键盘可达（需要交互时用 `button` 或补无障碍属性）。  
+- 页面内联大量样式（交给 CSS/SCSS）。
+
+## AI 行为
+
+- 改结构时保持可访问的基础语义。  
+- 不引入框架语法（Vue/React）到纯 HTML 任务中。
