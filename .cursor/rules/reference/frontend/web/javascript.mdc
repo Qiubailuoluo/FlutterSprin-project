@@ -1,0 +1,27 @@
+---
+description: 【参考/二开补充】原生 JavaScript 模块与 DOM；勿与 Vue/Flutter 混用
+globs:
+alwaysApply: false
+---
+
+# JavaScript（参考）
+
+> **优先级**：本地模块规范（ESM/打包方式）> 本文件。框架项目用对应框架目录。
+
+## 原则
+
+- 优先 ES modules；一文件一职责。  
+- DOM：查询失败要处理；事件监听成对考虑移除（SPA 碎片场景）。  
+- 请求：集中封装；错误与 loading 状态明确，避免静默失败。  
+- 使用 `const`/`let`；避免无必要 `var` 与全局污染。
+
+## 禁止
+
+- 内联 `onclick` 堆业务（跟项目若全是内联则维护时对齐，新代码仍建议外置）。  
+- `eval`、把不可信 HTML 直接 `innerHTML` 拼接（需时用安全方式或消毒）。  
+- 提交密钥、Token 写死在源码。
+
+## AI 行为
+
+- 不引入 Vue/React API 到原生 JS 任务。  
+- 小改动对齐现有命名与目录；大功能先拆模块再写。

@@ -1,28 +1,37 @@
 # reference — 补充参考规则（全集源）
 
-本目录是 **reference 全集源（唯一修改入口）**。运行副本在 `.cursor/rules/reference/`（可裁剪）。改规则后须同步到运行副本，见 [project-bootstrap.mdc](project-bootstrap.mdc)「双副本同步」。
+本目录是 **reference 全集源（唯一修改入口）**。运行副本常见路径：`.cursor/rules/reference/`（可裁剪）。改完后同步运行副本，见 [project-bootstrap.mdc](project-bootstrap.mdc)。
 
-**重要：** 仅解压不会自动高效。遵守 [project-bootstrap.mdc](project-bootstrap.mdc)：
+**其他项目**：仓库名/产品名可不同；入口文件约定为包内的 `project-bootstrap.mdc`（若改名，在目标项目 README 标明「reference 入口」）。路径按实际 `@`，不要写死某一业务专名。
 
-1. 按架构/栈删除或忽略未用目录（仅针对**运行副本**）  
-2. 大需求先按 [workflow/task-breakdown.mdc](workflow/task-breakdown.mdc)：**清单 + 模式必出**；混合分步/一口气 + **进度落盘**  
-3. 二开遵守 [workflow/code-change.mdc](workflow/code-change.mdc)（需求不清先澄清；禁止盲目改）  
-4. **每个 P** 声明 1～3 个主专题 → [docs-sync](workflow/docs-sync.mdc) / [acceptance](workflow/acceptance.mdc)（含最低验证）  
+## 开场习惯（流程生效率）
 
-## 与 Cursor / 项目规则的关系（避免伤项目）
+按 reference 干活时，**先 `@` 入口协议**再开工：
 
-| 层级 | 是什么 | 对本仓库 Ledger |
-|------|--------|-----------------|
-| Cursor / 助手侧通用能力 | 产品与对话内的通用编程习惯 | 始终存在，与 reference 无关 |
-| 用户规则（User Rules） | 你在 Cursor 设置里的全局偏好 | 如「用中文」等 |
-| **项目正式 rules** | `.cursor/rules/*.mdc` | **真正约束本项目** |
-| **本包 reference** | 泛类补充，默认 Manual | **源**在 `docs/reference/`；**运行**在 `.cursor/rules/reference/` |
+```text
+请先阅读并遵守 @.cursor/rules/reference/project-bootstrap.mdc
+（若运行副本路径不同，改为实际路径；只要指向入口协议即可）
+栈：……；新项目/二开；当前任务：……
+```
 
-**不会轻易伤项目的原因：**
+仅解压不会自动高效。入口协议要求：
 
-- 全员 `alwaysApply: false`、无宽 globs → 不会偷偷全局注入。  
-- 明文优先级：本地代码 > 项目正式 rules/docs > reference。  
-- 与正式规则重复时**不删正式侧**；冲突听本地。  
+1. 按架构/栈裁剪**运行副本**  
+2. 大需求：`task-breakdown` 清单 + 模式 + 落盘  
+3. `code-change`：需求不清先澄清；禁止盲目改  
+4. 每 P 主规则 1～3 → `docs-sync` / `acceptance`  
+
+## 与 Cursor / 项目规则的关系
+
+| 层级 | 是什么 | 说明 |
+|------|--------|------|
+| Cursor / 助手侧 | 通用编程习惯 | 与 reference 无关 |
+| 用户规则 | 全局偏好 | 如语言、提交习惯 |
+| **项目正式 rules** | 该仓库 `.cursor/rules` 专用约定 | **真正约束本项目** |
+| **本包 reference** | 泛类补充，默认 Manual | 源与运行副本路径以各项目为准 |
+
+- 全员 `alwaysApply: false` → 不偷偷全局注入。  
+- 优先级：本地代码 > 项目正式 rules/docs > reference。  
 
 ## 定位
 
@@ -31,60 +40,36 @@
 | 使用中补充词典 | 覆盖本地架构 |
 | 可同步到目标 `.cursor/rules/reference/` | 替代项目专用正式规则 |
 
-**优先级：** 本地代码 → 项目专用 rules/docs → reference。
+## 文档索引
 
 | 文档 | 用途 |
 |------|------|
-| [project-bootstrap.mdc](project-bootstrap.mdc) | 高效用法入口 + 双副本同步 |
-| [workflow/task-breakdown.mdc](workflow/task-breakdown.mdc) | P1…Pn、混合执行、每 P 主规则 |
-| [workflow/code-change.mdc](workflow/code-change.mdc) | 先澄清再改；风险/方案/预期；最小改动 |
-| [workflow/docs-sync.mdc](workflow/docs-sync.mdc) | docs 同步 |
-| [workflow/acceptance.mdc](workflow/acceptance.mdc) | 收尾 + 最低验证 + 基础设施测试 |
+| [project-bootstrap.mdc](project-bootstrap.mdc) | **入口协议**（开场必引用） |
+| [workflow/task-breakdown.mdc](workflow/task-breakdown.mdc) | P1…Pn、混合执行 |
+| [workflow/code-change.mdc](workflow/code-change.mdc) | 澄清后再改；最小改动 |
+| [workflow/docs-sync.mdc](workflow/docs-sync.mdc) | 项目 docs 同步 |
+| [workflow/acceptance.mdc](workflow/acceptance.mdc) | 最低验证、基础设施测试 |
 
 ## 目录
 
 ```text
-docs/reference/          ← 全集源（改这里）
-  README.md
-  project-bootstrap.mdc
+docs/reference/   或  仓库根 reference/   ← 全集源（改这里）
+  project-bootstrap.mdc   ← 入口
   workflow/
   middleware/
-  backend/                  ← 当前 = Java/Spring；Go/Python 有内容再建（见 backend/README）
-  frontend/                 ← 按栈：flutter / vue / web
+  backend/     ← 当前 Java/Spring；Go/Python 有内容再建
+  frontend/    ← flutter / vue / web
 
-.cursor/rules/reference/ ← 运行副本（同步后再裁剪未用栈）
-```
-
-## 推荐分发
-
-```text
-目标项目/.cursor/rules/reference/
-  （从本源同步后按栈裁剪）
-```
-
-## 交给 AI 的推荐开场
-
-```text
-请先阅读并遵守 @.cursor/rules/reference/project-bootstrap.mdc：
-1）运行副本裁剪未用目录；改规则只改 docs/reference 再同步；
-2）大需求：task-breakdown 清单+模式必出；每 P 主规则 1～3；混合分步/一口气+落盘；
-3）code-change：需求不清先澄清（风险/方案/预期），确认后再改；
-4）冲突以本地代码与项目正式 rules 为准；
-5）docs-sync；收尾 acceptance（最低验证；改 Result/异常/鉴权核心须带测试）。
-当前任务：……
+.cursor/rules/reference/   ← 运行副本（示例路径；同步后再裁剪）
 ```
 
 ## 演练日志 DRILL.md（可选 · 阶段性）
 
-| 是 | 不是 |
-|----|------|
-| 练习 reference 时的进度落盘、用例与验收记录 | 正式 API / 表结构 / 架构说明 |
-| 可阶段性清空或按轮次归档（如 `DRILL-2026-07.md`） | 替代 `docs/api` 等长期文档 |
-
-正式交付只认项目 `docs/` 业务文档 + 本目录 `.mdc` 规则正文。进度落盘优先写本文件；无演练任务时不必维护。
+练习流水账；**不是**正式 API/表结构文档；练完可归档或清空。正式契约写在**当前项目**的 `docs/api` 等处。
 
 ## 维护
 
-- **只改本目录（全集源），再同步运行副本。**  
+- **只改全集源，再同步运行副本**（若有双副本）。  
 - 单文件保持短；缺了再补；勿 Always 整包。  
-- 勿提交密钥与生产配置。
+- 勿提交密钥与生产配置。  
+- 规则正文避免绑定单一产品名；示例可写「如某记账应用」，以本地 docs 为准。

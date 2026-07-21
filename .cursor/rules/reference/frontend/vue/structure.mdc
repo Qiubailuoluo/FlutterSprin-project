@@ -1,0 +1,44 @@
+---
+description: 【参考/二开补充】Vue 3 目录与 Composition 分层；冲突时以本地 src 为准
+globs:
+alwaysApply: false
+---
+
+# Vue 结构（参考）
+
+> **优先级**：本地 `src/` 与项目 rules > 本文件。勿与 Flutter 规则混用。默认 **Vue 3 + Composition API**。
+
+## 推荐目录
+
+```text
+src/
+  api/          或 services/   请求封装
+  views/        或 pages/      页面
+  components/   可复用组件
+  composables/  组合式逻辑
+  stores/       全局状态（Pinia 等，跟项目）
+  router/
+  styles/       或 assets/
+  utils/
+```
+
+## 职责
+
+| 位置 | 做 | 不做 |
+|------|----|------|
+| view/page | 拼装组件、绑定 store/composable | 大段重复请求逻辑 |
+| component | 可复用 UI | 偷偷依赖具体路由业务（除非本就业务组件） |
+| composable / store | 状态与副作用 | 操作裸 DOM（极少例外） |
+| api | HTTP、类型/接口定义 | 弹 Message、改路由 |
+
+## 风格
+
+- 新代码优先 `<script setup>`。  
+- 组件文件名与项目现有 PascalCase / 目录约定一致。  
+- 样式：scoped 或 CSS Modules 跟项目；全局样式克制。
+
+## AI 行为
+
+- 新页面先对路由与目录，再写组件。  
+- 不引入与项目不一致的第二套状态库。  
+- Options API 仅在维护旧文件时沿用，不新开两套风格。

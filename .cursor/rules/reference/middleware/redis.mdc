@@ -40,7 +40,7 @@ alwaysApply: false
 
 生成代码时 Key 必须能看出权限边界；用户输入不可直接拼进 Key，先校验或映射。
 
-> 本仓库 Ledger 已有约定示例：`auth:token:{userId}`、`stats:user:{userId}:month:{yyyy-MM}` — 二开该项目时以正式规则为准。
+> 示例（某项目曾用）：`auth:token:{userId}`、`stats:user:{userId}:month:{yyyy-MM}` — **二开时以当前项目正式规则与代码为准**，勿照搬 key 名。
 
 ## 3. TTL 与更新
 

@@ -28,6 +28,6 @@
 3. 样式只改 SCSS 时，只挂 `web/scss.mdc`，不必同时挂 `css.mdc`（除非在迁移）。  
 4. 与后端联调时，再按需 `@` backend 专题，不要一次挂满。
 
-## 与本仓库 Ledger
+## 与具体项目的关系
 
-Ledger 正式前端规则在 `.cursor/rules/flutter-app.mdc`。本目录是泛类补充；冲突以正式规则与 `flutter_app/` 代码为准。
+目标仓库若已有正式前端 rules（如 Flutter 专用 `.mdc`），本目录为泛类补充；**冲突以该项目正式规则与本地代码为准**。勿假设所有项目都叫同一产品名。

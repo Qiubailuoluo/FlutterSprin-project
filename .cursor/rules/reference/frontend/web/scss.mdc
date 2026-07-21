@@ -1,0 +1,26 @@
+---
+description: 【参考/二开补充】SCSS 组织与嵌套；纯 CSS 项目请用 css.mdc
+globs:
+alwaysApply: false
+---
+
+# SCSS（参考）
+
+> **优先级**：本地样式目录与构建配置 > 本文件。纯 CSS 项目不要挂本文件。
+
+## 原则
+
+- 按模块拆文件（`_variables` / `_mixins` / 页面或组件 partial），由入口转发。  
+- 嵌套保持浅（建议 ≤3 层）；过深改为清晰类名。  
+- 变量、mixin、颜色与间距入口统一，禁止文件内散落魔法值。  
+- 输出仍遵守 CSS 层原则：少 `!important`、选择器可读。
+
+## 与 CSS 的分工
+
+- 预处理语法、文件拆分 → 本文件。  
+- 仅讨论布局/选择器且无 SCSS 语法 → `css.mdc`。
+
+## AI 行为
+
+- 新样式优先扩展现有 partial，不新建无引用的 orphan 文件。  
+- 不把 Vue/Flutter 组件样式规范写进本文件。

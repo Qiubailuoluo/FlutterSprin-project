@@ -1,32 +1,48 @@
 ---
-description: 【参考/二开补充】reference 高效用法：裁剪、拆解、每P主规则、双副本同步、收尾
+description: 【参考/二开补充】reference 入口协议：开场必引用、裁剪、拆解、双副本、收尾
 globs:
 alwaysApply: false
 ---
 
-# reference 高效用法协议（参考）
+# reference 高效用法协议（入口）
 
 > 本包是**使用中的补充词典**。仅解压**不会**自动高效；**按本协议选用**才有用。  
 > **优先级**：本地代码与项目专用 rules/docs > 本包专题文件。  
 > 本包默认 Manual，**不会**自动覆盖项目正式 rules；只有被 `@` 或主动阅读时才进入对话。
 
+## 开场习惯（流程生效率 · 必做）
+
+凡本对话要按 **reference** 开发/改代码/改规则，**开场应先引用本入口协议**（不要跳过直接改）：
+
+1. 用户或 AI **`@` 本文件**（包内约定文件名：`project-bootstrap.mdc`）。  
+2. 路径随项目而异，按实际位置引用，例如：  
+   - `@.cursor/rules/reference/project-bootstrap.mdc`（常见运行副本）  
+   - 或 `@docs/reference/project-bootstrap.mdc` / `@reference/project-bootstrap.mdc`（若源与运行合一）  
+3. 用一句话声明：**技术栈**（如 Java 单体 + Flutter）、**新项目或二开**、**当前任务**。  
+4. 大需求再 `@` `workflow/task-breakdown.mdc`；改已有代码再带上 `workflow/code-change.mdc`。
+
+**注意**：后续项目**名称、仓库名、产品名均可不同**；不要写死某一业务名。  
+本文件名 `project-bootstrap.mdc` 是**包内约定的入口文件名**；若目标项目改名了入口文件，开场改 `@` **该项目的入口协议**，并在其 README 标明「reference 入口」。
+
+未 `@` / 未读入口就整包发挥 = 易漏拆解、澄清与 docs 同步，**视为未按 reference 流程开工**。
+
 ## 双副本同步（防漂移）
 
-若仓库同时存在：
+若仓库同时维护「源」与「供 Cursor 引用的副本」（路径仅为常见示例，以各项目 README 为准）：
 
-| 角色 | 典型路径 | 约定 |
-|------|----------|------|
-| **全集源（唯一修改入口）** | `docs/reference/` | **只改这里** |
-| **运行副本（裁剪后给 Cursor @）** | `.cursor/rules/reference/` | 改完源后 **同步覆盖** 到此 |
+| 角色 | 典型路径（示例） | 约定 |
+|------|------------------|------|
+| **全集源（唯一修改入口）** | `docs/reference/` 或仓库根 `reference/` | **只改源** |
+| **运行副本** | `.cursor/rules/reference/` | 改完源后 **同步覆盖** 到此，再按栈裁剪 |
 
-- 禁止只改运行副本导致源包过期。  
-- 同步后运行副本可继续删除未用栈文件（裁剪），但**专题正文**以源为准再裁。  
-- 压缩分发前以 `docs/reference/`（或项目约定的源根）为准打包。
+- 禁止只改运行副本导致源过期。  
+- 若项目只有一份目录：改那一份即可，无双副本步骤。  
+- 压缩分发以**源目录**为准打包。
 
 ## 目录怎么保证高效
 
-- 后端：当前 `backend/` = **Java/Spring**（`common` + monolith **或** microservices）；**Go/Python 有内容再建** `backend/go`、`backend/python`，届时再把现有目录迁入 `backend/java/`（见 `backend/README`）。勿建空语言目录。  
-- 前端：只留实际栈（`frontend/flutter` 等）  
+- 后端：当前 `backend/` = **Java/Spring**（`common` + monolith **或** microservices）；**Go/Python 有内容再建**（见 `backend/README`）。勿建空语言目录。  
+- 前端：只留实际栈（`frontend/<栈>`）  
 - 工作流：`workflow/`  
 - **每个 P** 声明 **1～3 个**主专题 `.mdc`（流程件可不计）
 
@@ -37,42 +53,42 @@ alwaysApply: false
 | 单体（Java） | 留 `backend/common` + `monolith`；删/忽略 `microservices` |
 | 微服务（Java） | 留 `common` + `microservices`；删/忽略 `monolith` |
 | 非 Java 后端 | 忽略当前 `backend/` Java 专题，直至有对应语言目录 |
-| 用 Vue | 删/忽略 `frontend/flutter` 等 |
+| 用某前端栈 | 只留该栈；删/忽略其他 `frontend/*` |
 | 不用某中间件 | 删/忽略对应 middleware 文件 |
 
 ## AI 必须遵守的工作流
 
-1. **开场**：读本文件；确认单体/微服务、前端栈；确认源/副本路径。  
+1. **开场**：`@` 并遵守**本入口协议**；确认架构/前端栈；确认源与副本路径（随项目）。  
 2. **裁剪**：运行副本删或忽略未用目录。  
-3. **澄清（若需要）**：需求不清或发现风险 → 先按 `code-change` 说明理解/风险/方案/预期，**确认后再拆解或改代码**。  
-4. **拆解**：跨多层 → `workflow/task-breakdown`：**清单 + 模式必出**；混合执行（落盘为主，分步默认可被用户覆盖）。  
-5. **改代码**：`workflow/code-change`（先读后改、最小改动；禁止盲目修改）。  
-6. **选件**：当前 **P** 只选 **1～3 个**主专题（非整需求绑死 3 个）。  
-7. **二开**：冲突以本地为准。  
-8. **文档**：`workflow/docs-sync`。  
-9. **收尾**：`workflow/acceptance`（含最低验证；基础设施须带测试）。  
-10. **改规则**：改 `docs/reference` 后同步到 `.cursor/rules/reference/`。
+3. **澄清（若需要）**：需求不清或发现风险 → `code-change`：理解/风险/方案/预期，**确认后再拆或改**。  
+4. **拆解**：跨多层 → `task-breakdown`：清单 + 模式必出；混合执行。  
+5. **改代码**：`code-change`（先读后改、最小改动；禁止盲目修改）。  
+6. **选件**：当前 **P** 只选 **1～3 个**主专题。  
+7. **二开**：冲突以**当前项目**本地代码与正式 rules 为准。  
+8. **文档**：`docs-sync`（对齐**当前项目**的 `docs/`，勿假设固定产品名）。  
+9. **收尾**：`acceptance`（最低验证；基础设施须带测试）。  
+10. **改规则**：改源目录后同步运行副本（若有双副本）。
 
 ## 人侧分发
 
-1. 从全集源同步/解压到 `.cursor/rules/reference/`。  
+1. 将本包放到目标项目的约定位置（源 + 可选运行副本）。  
 2. 按架构与前端栈裁剪运行副本。  
 3. 保持 Manual；禁止整包 Always。  
-4. 先 `@` 本文件；大需求同时 `@` `task-breakdown`。
+4. **养成开场 `@` 入口协议**；大需求同时 `@` `task-breakdown`。
 
 ## 按任务选用（检索表）
 
-路径相对 `reference/`。
+路径相对包内 `reference/` 根。
 
 | 正在做的事 | 建议引用 |
 |------------|----------|
-| 本协议 | `project-bootstrap.mdc` |
+| **入口协议（开场）** | `project-bootstrap.mdc`（或项目标明的入口文件） |
 | 大需求拆解 | `workflow/task-breakdown.mdc` |
 | **修改已有代码 / 二开** | `workflow/code-change.mdc` |
 | 分层/建类/API/异常/安全（**Java**） | `backend/common/` 下对应文件 |
 | **注释 / JavaDoc / 注解** | `backend/common/comments-annotations.mdc` |
 | 单体 / 微服务（**Java**） | `backend/monolith/overview` 或 `backend/microservices/architecture` |
-| 后端 Go / Python | 有对应目录与 `.mdc` 后再引用；勿套用 Java 注解约定 |
+| 后端 Go / Python | 有对应目录后再引用；勿套用 Java 注解约定 |
 | 中间件 | `middleware/…` |
 | 前端某栈 | `frontend/<实际栈>/…` |
 | **前端模块 / 多语言 i18n** | `frontend/i18n.mdc` |
@@ -81,14 +97,16 @@ alwaysApply: false
 
 ## 本地常驻服务（减噪，可选）
 
-- 后端/前端热重启前确认端口（如 8080 / 8081）是否被旧进程占用；占用则先结束再启。  
-- 细节以项目 `docs/dev-setup` 为准。
+- 重启前确认项目文档中的端口是否被占用。  
+- 细节以**当前项目**的 `docs/dev-setup`（或等价文档）为准。
 
 ## 禁止
 
+- 声称按 reference 干活却**不开场引用入口协议**。  
 - 未出清单/模式就把前后端+多中间件一次做完且挂满规则。  
-- 只改运行副本不同步全集源。  
+- 只改运行副本不同步源（若有双副本）。  
 - 修改时顺手大重构、扩大范围。  
 - 混用 monolith 与 microservices，或混用多套前端栈规则。  
 - 一次加载整包 reference。  
-- **需求不清或已知风险时不经确认就直接改业务代码。**
+- **需求不清或已知风险时不经确认就直接改业务代码。**  
+- 把某一示例仓库的产品名、包名写进规则当全局唯一真相。
